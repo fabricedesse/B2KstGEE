@@ -29,7 +29,8 @@ cout<< "x0_increment = " << x0_increment << endl
     << "x2_increment = " << x2_increment << endl
     << "x2_increment_TRUE = " << x2_increment_TRUE << endl
     << "x3_increment = " << x3_increment << endl
-    << "x3_increment_TRUE = " << x3_increment_TRUE << endl;
+    << "x3_increment_TRUE = " << x3_increment_TRUE << endl
+    << "a change" << endl;
 
 
 
