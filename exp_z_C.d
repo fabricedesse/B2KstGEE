@@ -1,0 +1,53 @@
+
+# DO NOT DELETE
+
+./exp_z_C.so: /home/desse/root-build/include/TString.h
+./exp_z_C.so: /home/desse/root-build/include/Riosfwd.h
+./exp_z_C.so: /home/desse/root-build/include/RConfig.h
+./exp_z_C.so: /home/desse/root-build/include/RVersion.h
+./exp_z_C.so: /home/desse/root-build/include/TMathBase.h
+./exp_z_C.so: /home/desse/root-build/include/Rtypes.h
+./exp_z_C.so: /home/desse/root-build/include/DllImport.h
+./exp_z_C.so: /home/desse/root-build/include/Rtypeinfo.h
+./exp_z_C.so: /home/desse/root-build/include/snprintf.h
+./exp_z_C.so: /home/desse/root-build/include/strlcpy.h
+./exp_z_C.so: /home/desse/root-build/include/TGenericClassInfo.h
+./exp_z_C.so: /home/desse/root-build/include/TSchemaHelper.h
+./exp_z_C.so: /home/desse/root-build/include/TFile.h
+./exp_z_C.so: /home/desse/root-build/include/TDirectoryFile.h
+./exp_z_C.so: /home/desse/root-build/include/TDirectory.h
+./exp_z_C.so: /home/desse/root-build/include/TNamed.h
+./exp_z_C.so: /home/desse/root-build/include/TObject.h
+./exp_z_C.so: /home/desse/root-build/include/TStorage.h
+./exp_z_C.so: /home/desse/root-build/include/TVersionCheck.h
+./exp_z_C.so: /home/desse/root-build/include/TBuffer.h
+./exp_z_C.so: /home/desse/root-build/include/TList.h
+./exp_z_C.so: /home/desse/root-build/include/TSeqCollection.h
+./exp_z_C.so: /home/desse/root-build/include/TCollection.h
+./exp_z_C.so: /home/desse/root-build/include/TIterator.h
+./exp_z_C.so: /home/desse/root-build/include/TDatime.h
+./exp_z_C.so: /home/desse/root-build/include/TUUID.h
+./exp_z_C.so: /home/desse/root-build/include/TMap.h
+./exp_z_C.so: /home/desse/root-build/include/THashTable.h
+./exp_z_C.so: /home/desse/root-build/include/TUrl.h
+./exp_z_C.so: /home/desse/root-build/include/TTree.h
+./exp_z_C.so: /home/desse/root-build/include/TBranch.h
+./exp_z_C.so: /home/desse/root-build/include/TObjArray.h
+./exp_z_C.so: /home/desse/root-build/include/TAttFill.h
+./exp_z_C.so: /home/desse/root-build/include/TDataType.h
+./exp_z_C.so: /home/desse/root-build/include/TDictionary.h
+./exp_z_C.so: /home/desse/root-build/include/Property.h
+./exp_z_C.so: /home/desse/root-build/include/ESTLType.h
+./exp_z_C.so: /home/desse/root-build/include/TAttLine.h
+./exp_z_C.so: /home/desse/root-build/include/TAttMarker.h
+./exp_z_C.so: /home/desse/root-build/include/TArrayD.h
+./exp_z_C.so: /home/desse/root-build/include/TArray.h
+./exp_z_C.so: /home/desse/root-build/include/TArrayI.h
+./exp_z_C.so: /home/desse/root-build/include/TClass.h
+./exp_z_C.so: /home/desse/root-build/include/TObjString.h
+./exp_z_C.so: /home/desse/root-build/include/ThreadLocalStorage.h
+./exp_z_C.so: /home/desse/root-build/include/RConfigure.h
+./exp_z_C.so: /home/desse/root-build/include/TVirtualTreePlayer.h
+./exp_z_C.so: /home/desse/root-build/include/TVector2.h
+./exp_z_C.so: /home/desse/root-build/include/cintdictversion.h /home/desse/root-build/include/RVersion.h
+exp_z_C__ROOTBUILDVERSION= 5.34/36

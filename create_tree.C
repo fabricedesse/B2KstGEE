@@ -20,8 +20,106 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TBranch.h"
+#include "TVector2.h"
 
 using namespace std;
+
+//==============================================================================
+// Functions
+//==============================================================================
+
+Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
+  Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y,
+  Double_t mother_ENDVERTEX_Z)
+{
+  //============================================================================
+  // z-positions of velo stations (in mm). (0,0,0) is the position of the pp
+  // interaction
+  //============================================================================
+  // CHECK VALUES
+  Int_t nb_VELO_station = 21;
+  Int_t z_VELO[2*nb_VELO_station];
+  // left stations
+    // central stations
+    z_VELO[0]=-175;
+    z_VELO[2]=-145;
+    z_VELO[4]=-115;
+    z_VELO[6]=-85;
+    z_VELO[8]=-55;
+    z_VELO[10]=-25;
+    z_VELO[12]=5;
+    z_VELO[14]=35;
+    z_VELO[16]=65;
+    z_VELO[18]=95;
+    z_VELO[20]=125;
+    z_VELO[22]=155;
+    z_VELO[24]=185;
+    z_VELO[26]=215;
+    z_VELO[28]=245;
+    z_VELO[30]=275;
+    // low angle stations
+    z_VELO[32]=435;
+    z_VELO[34]=585;
+    z_VELO[36]=635;
+    z_VELO[38]=685;
+    z_VELO[40]=735;
+  // right stations
+    // central stations
+    z_VELO[1]=-160;
+    z_VELO[3]=-130;
+    z_VELO[5]=-100;
+    z_VELO[7]=-70;
+    z_VELO[9]=-40;
+    z_VELO[11]=-10;
+    z_VELO[13]=20;
+    z_VELO[15]=50;
+    z_VELO[17]=80;
+    z_VELO[19]=110;
+    z_VELO[21]=140;
+    z_VELO[23]=170;
+    z_VELO[25]=200;
+    z_VELO[27]=230;
+    z_VELO[29]=260;
+    z_VELO[31]=290;
+    // low angle stations
+    z_VELO[33]=450;
+    z_VELO[35]=600;
+    z_VELO[37]=650;
+    z_VELO[39]=700;
+    z_VELO[41]=750;
+
+  //============================================================================
+  // Calculate expected first measurement in z if the particle originates from
+  // the vertex of the input mother
+  //============================================================================
+
+  Double_t exp_FirstMeasurementZ = -1000;
+
+  for ( Int_t i = 0; i < nb_VELO_station; i++ )
+  {
+    // Extrapolate x and y for all VELO positions upstream of the mother
+    // z position
+    if ( ( z_VELO[i] - mother_ENDVERTEX_Z ) >= 0 )
+    {
+      TVector2 XY(-1000,-1000);
+      XY.SetX( mother_ENDVERTEX_X
+        + ( PX/PZ ) * ( z_VELO[i] - mother_ENDVERTEX_Z ) );
+      XY.SetY( mother_ENDVERTEX_Y
+        + ( PY/PZ ) * ( z_VELO[i] - mother_ENDVERTEX_Z ) );
+
+      // if (x,y) is in the VELO acceptance this is the expected first
+      // measurement in z
+      if ( XY.Mag() > 8.2 && XY.Mag() < 41.9 )
+      {
+        exp_FirstMeasurementZ = z[i] ;
+      }
+    }
+  }
+
+return exp_FirstMeasurementZ ;
+
+}
+
 
 void create_tree (TString input_file, TString input_tree, TString output_file)
 {
@@ -118,146 +216,6 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
 
   //============================================================================
-  // Calculation of expected z first measurement
-  //============================================================================
-
-  // z-positions of velo stations (in mm). (0,0,à) is the position of the pp
-  // interaction
-  Int_t z_VELO_left[42];
-  // central stations by pairs (each pair is one layer of width 1.5-2 mm
-  // CHECK WHY SOMETIMES 1.5 and 2
-  z_VELO_left[0]=-176;
-  z_VELO_left[1]=-174.5;
-
-  z_VELO_left[2]=-146;
-  z_VELO_left[3]=-144;
-
-  z_VELO_left[4]=-116;
-  z_VELO_left[5]=-114;
-
-  z_VELO_left[6]=-86;
-  z_VELO_left[7]=-84;
-
-  z_VELO_left[8]=-56;
-  z_VELO_left[9]=-54;
-
-  z_VELO_left[10]=-26;
-  z_VELO_left[11]=-24;
-
-  z_VELO_left[12]=4;
-  z_VELO_left[13]=6;
-
-  z_VELO_left[14]=34;
-  z_VELO_left[15]=36;
-
-  z_VELO_left[16]=64;
-  z_VELO_left[17]=66;
-
-  z_VELO_left[18]=94;
-  z_VELO_left[19]=95.5;
-
-  z_VELO_left[20]=124;
-  z_VELO_left[21]=125.5;
-
-  z_VELO_left[22]=154;
-  z_VELO_left[23]=155.5;
-
-  z_VELO_left[24]=184;
-  z_VELO_left[25]=186;
-
-  z_VELO_left[26]=214;
-  z_VELO_left[27]=216;
-
-  z_VELO_left[28]=244;
-  z_VELO_left[29]=246;
-
-  z_VELO_left[30]=274;
-  z_VELO_left[31]=275.5;
-
-  // low angle stations
-  z_VELO_left[32]=434;
-  z_VELO_left[33]=436;
-
-  z_VELO_left[34]=584;
-  z_VELO_left[35]=586;
-
-  z_VELO_left[36]=634;
-  z_VELO_left[37]=636;
-
-  z_VELO_left[38]=684;
-  z_VELO_left[39]=686;
-
-  z_VELO_left[40]=734;
-  z_VELO_left[41]=736;
-
-  Int_t z_VELO_right2[42];
-
-  z_VELO_right2[0]=-161;
-  z_VELO_right2[1]=-159;
-
-  z_VELO_right2[2]=-131;
-  z_VELO_right2[3]=-129;
-
-  z_VELO_right2[4]=-101;
-  z_VELO_right2[5]=-99;
-
-  z_VELO_right2[6]=-70.5;
-  z_VELO_right2[7]=-69;
-
-  z_VELO_right2[8]=-41;
-  z_VELO_right2[9]=-39;
-
-  z_VELO_right2[10]=-11;
-  z_VELO_right2[11]=-9;
-
-  z_VELO_right2[12]=19;
-  z_VELO_right2[13]=21;
-
-  z_VELO_right2[14]=49;
-  z_VELO_right2[15]=51;
-
-  z_VELO_right2[16]=79;
-  z_VELO_right2[17]=81;
-
-  z_VELO_right2[18]=109;
-  z_VELO_right2[19]=111;
-
-  z_VELO_right2[20]=139;
-  z_VELO_right2[21]=141;
-
-  z_VELO_right2[22]=169;
-  z_VELO_right2[23]=171;
-
-  z_VELO_right2[24]=199;
-  z_VELO_right2[25]=201;
-
-  z_VELO_right2[26]=229;
-  z_VELO_right2[27]=231;
-
-  z_VELO_right2[28]=259;
-  z_VELO_right2[29]=260.5;
-
-
-  z_VELO_right2[30]=289;
-  z_VELO_right2[31]=291;
-
-  // low angle stations
-  z_VELO_right2[32]=449;
-  z_VELO_right2[33]=451;
-
-  z_VELO_right2[34]=599;
-  z_VELO_right2[35]=601;
-
-  z_VELO_right2[36]=649;
-  z_VELO_right2[37]=650.5;
-
-  z_VELO_right2[38]=699;
-  z_VELO_right2[39]=701;
-
-  z_VELO_right2[40]=749;
-  z_VELO_right2[41]=751;
-
-  //============================================================================
   // Fill and write tree
   //============================================================================
   int nentries = (int)T->GetEntries();
@@ -267,7 +225,10 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
       T->GetEntry(i);
 
       // Add expected first measurement z
-
+      E1_TRUE_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
+      E1_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
+      E2_TRUE_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
+      E2_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
 
       newTree->Fill();
     }
