@@ -10,8 +10,7 @@ public:
 
 // Default constructor
 Station();
-// Destructor
-~Station();
+
 // Full constructor
 Station(Int_t number, Double_t z_position, Bool_t isLeft) ;
 

@@ -23,14 +23,6 @@ VELO();
 
 // Getters
 Station GetStation( Int_t station_number );
-Station GetStationOfZ( Double_t z );
-
-// Setters
-void SetStation( Int_t station_number, Station& myStation);
-void SetStationOfZ( Double_t z, Station& myStation) ;
-
-// Functions
-AddStation( Station& myStation );
 
 //==============================================================================
 // Private attributes
