@@ -1,9 +1,7 @@
-#ifndef VELO_h
-#define VELO_h
+#ifndef Station_h
+#define Station_h
 
-#include "Station.h"
-
-class VELO {
+class Station {
 
 public:
 //==============================================================================
@@ -11,33 +9,33 @@ public:
 //==============================================================================
 
 // Default constructor
-VELO();
+Station();
 // Destructor
-~VELO();
+~Station();
 // Full constructor
-VELO(Int_t nb_stations, std::vector<Station> VELO_stations) ;
+Station(Int_t station_number, Double_t z_position, Bool_t isLeft) ;
 
 //==============================================================================
 // Public member functions
 //==============================================================================
 
 // Getters
-Station GetStation( Int_t station_number );
-Station GetStationOfZ( Double_t z );
+Int_t GetNumber();
+Double_t GetZ();
+Bool_t IsLeft();
 
 // Setters
-void SetStation( Int_t station_number, Station& myStation);
-void SetStationOfZ( Double_t z, Station& myStation) ;
-
-// Functions
-AddStation( Station& myStation );
+void SetNumber(Int_t station_number);
+void SetZ(Double_t z);
+void SetIsLeft(Bool_t isLeft);
 
 //==============================================================================
 // Private attributes
 //==============================================================================
 private:
-Int_t nb_stations;
-std::vector<Station> VELO_stations;
+Int_t station_number;
+Double_t z_position;
+Bool_t isLeft;
 
 };
 
