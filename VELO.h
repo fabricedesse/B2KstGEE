@@ -3,6 +3,8 @@
 
 #include "Station.h"
 
+#include <vector>
+
 class VELO {
 
 public:
@@ -14,8 +16,6 @@ public:
 VELO();
 // Destructor
 ~VELO();
-// Full constructor
-VELO(Int_t nb_stations, std::vector<Station> VELO_stations) ;
 
 //==============================================================================
 // Public member functions

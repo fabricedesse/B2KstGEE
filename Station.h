@@ -13,7 +13,7 @@ Station();
 // Destructor
 ~Station();
 // Full constructor
-Station(Int_t station_number, Double_t z_position, Bool_t isLeft) ;
+Station(Int_t number, Double_t z_position, Bool_t isLeft) ;
 
 //==============================================================================
 // Public member functions
@@ -25,7 +25,7 @@ Double_t GetZ();
 Bool_t IsLeft();
 
 // Setters
-void SetNumber(Int_t station_number);
+void SetNumber(Int_t number);
 void SetZ(Double_t z);
 void SetIsLeft(Bool_t isLeft);
 
@@ -34,8 +34,8 @@ void SetIsLeft(Bool_t isLeft);
 //==============================================================================
 private:
 Int_t station_number;
-Double_t z_position;
-Bool_t isLeft;
+Double_t station_z;
+Bool_t station_isLeft;
 
 };
 
