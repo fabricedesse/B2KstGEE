@@ -15,11 +15,14 @@ Station::Station()
 }
 
 // Full constructor
-Station::Station(int number, double z_position, bool isLeft)
+Station::Station(int number, double z_position, bool isLeft,
+                 double min_r, double max_r)
 {
   station_number = number;
   station_z = z_position;
   station_isLeft = isLeft;
+  min_radius = min_r;
+  max_radius = max_r;
 }
 
 //==============================================================================
@@ -56,4 +59,11 @@ void Station::SetZ(double z)
 void Station::SetIsLeft(bool isLeft)
 {
   station_isLeft = isLeft;
+}
+
+// Other
+bool Station::IsInAcceptance( TVector2 XY)
+{
+  if ( XY.Mod() > 8.2 && XY.Mod() < 49.1 ) return 1;
+  else return 0;
 }

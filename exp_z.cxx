@@ -39,18 +39,17 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
       // isLeft/isRight of the tested VELO station
       if ( ( exp_x > 0 && myStation.IsLeft() ) ||
            (exp_x < 0 && !(myStation.IsLeft() ) ) )
-      {
-       // If (x,y) is in the VELO acceptance this is the expected first
-       // measurement in z
-       if ( myStation.IsInAcceptance(XY) )
-       {
-         exp_FirstMeasurementZ = z_VELO;
-         break;
-       }
-       else continue;
-      }
+           {
+             // If (x,y) is in the VELO acceptance this is the expected first
+             // measurement in z
+             if ( myStation.IsInAcceptance(XY) )
+             {
+               exp_FirstMeasurementZ = z_VELO;
+               break;
+             }
       else continue;
     }
+    else continue;
   }
   return exp_FirstMeasurementZ ;
 }

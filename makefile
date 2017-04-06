@@ -3,7 +3,7 @@
 # Code   : Example usage for TMVA analyses                           #
 ######################################################################
 BINS = Main
-# ADD =  
+#ADD = exp_z.C
 DIC = VELO.cxx Station.cxx
 
 CXX = g++
@@ -24,7 +24,7 @@ default : $(BINS) $(ADD)  $(DIC)
 # $(INCS): % : %.cxx
 # 	$(CXX)
 
-$(BINS): % : %.cxx VELO.h Station.h
+$(BINS): % : %.cxx VELO.h Station.h 
 	@echo -n "Building $@ ... "
 	$(CXX) $(CCFLAGS) $(DIC)  $(ADD) $<  $(addprefix -I, $(INCS))  $(shell root-config --libs)  $(ROOSTAT) -lMLP -lMinuit -lTreePlayer  -lXMLIO   -lm  -g -o $@
 	@echo "Done"

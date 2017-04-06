@@ -49,5 +49,19 @@
 ./exp_z_C.so: /home/desse/root-build/include/RConfigure.h
 ./exp_z_C.so: /home/desse/root-build/include/TVirtualTreePlayer.h
 ./exp_z_C.so: /home/desse/root-build/include/TVector2.h
+./exp_z_C.so: /home/desse/root-build/include/TVector3.h
+./exp_z_C.so: /home/desse/root-build/include/TError.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrix.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixF.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixT.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixTBase.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixFBasefwd.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixDBasefwd.h
+./exp_z_C.so: /home/desse/root-build/include/TVectorFfwd.h
+./exp_z_C.so: /home/desse/root-build/include/TVectorDfwd.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixTUtils.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixFfwd.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixFUtils.h
+./exp_z_C.so: /home/desse/root-build/include/TMatrixFUtilsfwd.h
 ./exp_z_C.so: /home/desse/root-build/include/cintdictversion.h /home/desse/root-build/include/RVersion.h
 exp_z_C__ROOTBUILDVERSION= 5.34/36

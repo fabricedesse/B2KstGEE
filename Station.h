@@ -10,6 +10,8 @@
 #ifndef Station_h
 #define Station_h
 
+#include "TVector2.h"
+
 class Station {
 
 public:
@@ -21,7 +23,8 @@ public:
 Station();
 
 // Full constructor
-Station(int number, double z_position, bool isLeft) ;
+Station(int number, double z_position, bool isLeft,
+        double min_r = 8.2, double max_r = 49.1) ;
 
 //==============================================================================
 // Public member functions
@@ -37,6 +40,9 @@ void SetNumber(int number);
 void SetZ(double z);
 void SetIsLeft(bool isLeft);
 
+// Other
+bool IsInAcceptance(TVector2 XY);
+
 //==============================================================================
 // Private attributes
 //==============================================================================
@@ -44,6 +50,8 @@ private:
 int station_number;
 double station_z;
 bool station_isLeft;
+double min_radius;
+double max_radius;
 
 };
 
