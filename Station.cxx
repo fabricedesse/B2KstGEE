@@ -1,3 +1,12 @@
+//==============================================================================
+// Author: Fabrice Desse
+//
+// Date: 2016-04-05
+//
+// Class Station: station of the VELO
+//
+//==============================================================================
+
 #include "Station.h"
 
 // Default constructor
@@ -6,7 +15,7 @@ Station::Station()
 }
 
 // Full constructor
-Station::Station(Int_t number, Double_t z_position, Bool_t isLeft)
+Station::Station(int number, double z_position, bool isLeft)
 {
   station_number = number;
   station_z = z_position;
@@ -18,33 +27,33 @@ Station::Station(Int_t number, Double_t z_position, Bool_t isLeft)
 //==============================================================================
 
 // Getters
-Int_t Station::GetNumber()
+int Station::GetNumber()
 {
   return station_number;
 }
 
-Double_t Station::GetZ()
+double Station::GetZ()
 {
   return station_z;
 }
 
-Bool_t Station::IsLeft()
+bool Station::IsLeft()
 {
   return station_isLeft;
 }
 
 // Setters
-void Station::SetNumber(Int_t number)
+void Station::SetNumber(int number)
 {
   station_number = number;
 }
 
-void Station::SetZ(Double_t z)
+void Station::SetZ(double z)
 {
   station_z = z;
 }
 
-void Station::SetIsLeft(Bool_t isLeft)
+void Station::SetIsLeft(bool isLeft)
 {
   station_isLeft = isLeft;
 }

@@ -1,3 +1,12 @@
+//==============================================================================
+// Author: Fabrice Desse
+//
+// Date: 2016-04-05
+//
+// Class Station: station of the VELO
+//
+//==============================================================================
+
 #ifndef Station_h
 #define Station_h
 
@@ -12,29 +21,29 @@ public:
 Station();
 
 // Full constructor
-Station(Int_t number, Double_t z_position, Bool_t isLeft) ;
+Station(int number, double z_position, bool isLeft) ;
 
 //==============================================================================
 // Public member functions
 //==============================================================================
 
 // Getters
-Int_t GetNumber();
-Double_t GetZ();
-Bool_t IsLeft();
+int GetNumber();
+double GetZ();
+bool IsLeft();
 
 // Setters
-void SetNumber(Int_t number);
-void SetZ(Double_t z);
-void SetIsLeft(Bool_t isLeft);
+void SetNumber(int number);
+void SetZ(double z);
+void SetIsLeft(bool isLeft);
 
 //==============================================================================
 // Private attributes
 //==============================================================================
 private:
-Int_t station_number;
-Double_t station_z;
-Bool_t station_isLeft;
+int station_number;
+double station_z;
+bool station_isLeft;
 
 };
 
