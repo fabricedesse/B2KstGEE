@@ -17,10 +17,46 @@
 // Default constructor
 VELO::VELO()
 {
-  // construct VELO by hand
-  // test
-  Station s0(0, -150, 1);
-  VELO_stations.push_back(s0);
+  // construct LHCb VELO
+  double z_min = -175;
+  int nb_central_stations = 16;
+  int nb_low_angle_stations = 4;
+
+  // Central stations
+  for (int i = 0; i< nb_central_stations; i++)
+  {
+    Station s_left(i, z_min + i*30, 1);
+    Station s_right(i, s_left.GetZ() + 15, 0);
+    VELO_stations.push_back(s_left);
+    VELO_stations.push_back(s_right);
+  }
+
+  // First two low angle station
+  Station s1_left(VELO_stations.back().GetNumber() +1,
+                  VELO_stations.back().GetZ() + 145, 1);
+  Station s1_right(VELO_stations.back().GetNumber() +1,
+                  VELO_stations.back().GetZ() + 160, 0);
+  VELO_stations.push_back(s1_left);
+  VELO_stations.push_back(s1_right);
+
+  Station s2_left(VELO_stations.back().GetNumber() +1,
+                  VELO_stations.back().GetZ() + 135, 1);
+  Station s2_right(VELO_stations.back().GetNumber() +1,
+                  VELO_stations.back().GetZ() + 150, 0);
+  VELO_stations.push_back(s2_left);
+  VELO_stations.push_back(s2_right);
+
+  // Low angle stations (appart from the first two)
+  for (int i = 0; i <nb_low_angle_stations - 1; i++ )
+  {
+    Station s_left(VELO_stations.back().GetNumber() +1,
+                   VELO_stations.back().GetZ() + 35,1);
+    Station s_right(VELO_stations.back().GetNumber() + 1,
+                    VELO_stations.back().GetZ() + 50,0);
+    VELO_stations.push_back(s_left);
+    VELO_stations.push_back(s_right);
+  }
+
   nb_stations = VELO_stations.size();
 }
 
@@ -43,11 +79,13 @@ int VELO::GetNbStations()
 
 void VELO::PrintStations()
 {
+  std::cout << "VELO has " << nb_stations/2 << " stations." << std::endl;
+
   for (int i=0; i<nb_stations; i++)
   {
-    std::cout << "VELO has " << nb_stations << " stations." << std::endl
-      << "Station #" << VELO_stations.at(i).GetNumber()
-      << " *** z = " << VELO_stations.at(i).GetZ()
-      << " *** IsLeft = " << VELO_stations.at(i).IsLeft() << std::endl;
+    std::cout << "Station #" << VELO_stations.at(i).GetNumber()
+              << " *** z = " << VELO_stations.at(i).GetZ()
+              << " *** IsLeft = " << VELO_stations.at(i).IsLeft()
+              << std::endl;
   }
 }

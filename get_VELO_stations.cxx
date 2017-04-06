@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -42,23 +43,29 @@ void get_VELO_stations( TString input_file, TString input_tree)
   {
     T->GetEntry(i);
 
-    if (std::find(stations.begin(),
-        stations.end(), z_position) == stations.end())
+    if (std::find(stations.begin(),stations.end(), z_position) == stations.end())
     {
       stations.push_back(z_position);
     }
   }
 
   // Sort the stations
-  stations.sort();
+  std::sort(stations.begin(), stations.end());
 
   // Write stations in txt file
   ofstream myFile ("VELO_stations.txt");
   if (myFile.is_open())
   {
-    for (vector<double>::const_iterator i = stations.begin();
+    /*for (vector<double>::const_iterator i = stations.begin();
           i != stations.end(); i++)
-    myfile << i << ";" << stations.at(i) << "\n";
+          {
+            //myFile << "a line. \n";
+            myFile << "\t\t" << "0" << ", " << stations.at(i) << "\n";
+          }
+          */
+    copy(stations.begin(), stations.end(), ostream_iterator<double>(myFile,"\n"));
+    myFile.close();
+
   }
   else cout << "Unable to open file";
 }

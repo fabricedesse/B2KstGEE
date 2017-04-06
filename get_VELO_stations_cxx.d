@@ -1,0 +1,52 @@
+
+# DO NOT DELETE
+
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TFile.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TDirectoryFile.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TDirectory.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TNamed.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TObject.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/Rtypes.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/RConfig.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/RVersion.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/DllImport.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/Rtypeinfo.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/snprintf.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/strlcpy.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TGenericClassInfo.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TSchemaHelper.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TStorage.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TVersionCheck.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/Riosfwd.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TBuffer.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TString.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TMathBase.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TList.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TSeqCollection.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TCollection.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TIterator.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TDatime.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TUUID.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TMap.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/THashTable.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TUrl.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TTree.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TBranch.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TObjArray.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TAttFill.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TDataType.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TDictionary.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/Property.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/ESTLType.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TAttLine.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TAttMarker.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TArrayD.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TArray.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TArrayI.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TClass.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TObjString.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/ThreadLocalStorage.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/RConfigure.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/TVirtualTreePlayer.h
+./get_VELO_stations_cxx.so: /home/desse/root-build/include/cintdictversion.h /home/desse/root-build/include/RVersion.h
+get_VELO_stations_cxx__ROOTBUILDVERSION= 5.34/36
