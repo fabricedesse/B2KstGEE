@@ -38,10 +38,16 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
     // z position
     if ( ( z_VELO - mother_ENDVERTEX_Z ) >= 0 )
     {
-      Double_t exp_x = mother_ENDVERTEX_X
-        + ( PX/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
-      Double_t exp_y = mother_ENDVERTEX_Y
-        + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
+      Double_t exp_x = -1000;
+      Double_t exp_y = -1000;
+      if (PZ != 0)
+      {
+        exp_x = mother_ENDVERTEX_X
+          + ( PX/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
+        exp_y = mother_ENDVERTEX_Y
+          + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
+      }
+      else break;
 
       TVector2 XY(exp_x,exp_y);
 
