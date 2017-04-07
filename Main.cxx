@@ -19,7 +19,7 @@ int main()
 
   // Create tree
   create_tree("../data/EE_candidates_q2gamma_Final.root", "Bd2KstGEE",
-              "../data/test_TRUE_Z.root");
+              "../data/EE_TRACKZ.root");
 
   cout << "Main is done." << endl;
 }

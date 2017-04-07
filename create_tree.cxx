@@ -44,7 +44,7 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
         + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
 
       TVector2 XY(exp_x,exp_y);
-      cout << "(" << exp_x << ", " << exp_y << ")" << endl;
+
       // Check if (x,y) is on the left/right and if it corresponds to the
       // isLeft/isRight of the tested VELO station
       if ( ( exp_x > 0 && myStation.IsLeft() ) ||
@@ -55,7 +55,6 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
        if ( myStation.IsInAcceptance(XY) )
        {
          exp_FirstMeasurementZ = z_VELO;
-         cout << exp_FirstMeasurementZ << endl;
          break;
        }
        else continue;
@@ -193,7 +192,7 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
 
-    for(int i=0; i<3; i++)
+    for(int i=0; i<nentries; i++)
     {
       T->GetEntry(i);
 
@@ -209,10 +208,18 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
                                 B0_ENDVERTEX_X,
                                 B0_ENDVERTEX_Y,
                                 B0_ENDVERTEX_Z, myVELO);
-/*
-      E2_TRUE_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
-      E2_EXP_TRACK_FirstMeasurementZ = get_exp_firstMeasurementZ();
-*/
+
+      E2_TRUE_EXP_TRACK_FirstMeasurementZ =
+            get_exp_firstMeasurementZ(E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
+                                      E2_TRUEORIGINVERTEX_X,
+                                      E2_TRUEORIGINVERTEX_Y,
+                                      E2_TRUEORIGINVERTEX_Z, myVELO);
+      E2_EXP_TRACK_FirstMeasurementZ =
+            get_exp_firstMeasurementZ(E2_PX,E2_PY, E2_PZ,
+                                B0_ENDVERTEX_X,
+                                B0_ENDVERTEX_Y,
+                                B0_ENDVERTEX_Z, myVELO);
+
       newTree->Fill();
     }
 
