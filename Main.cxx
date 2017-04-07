@@ -10,18 +10,16 @@
 #include <stdlib.h>
 #include "VELO.h"
 #include "Station.h"
-#include "exp_z.C"
+#include "create_tree.h"
 
 using namespace std;
 
 int main()
 {
-  // Construct VELO
-  VELO myVELO;
-  myVELO.PrintStations();
 
-  // Test of exp_z
-  cout << get_exp_firstMeasurementZ(-8.2,0,30,0,0,-175,myVELO) << endl;
+  // Create tree
+  create_tree("../data/EE_candidates_q2gamma_Final.root", "Bd2KstGEE",
+              "../data/test_TRUE_Z.root");
 
   cout << "Main is done." << endl;
 }

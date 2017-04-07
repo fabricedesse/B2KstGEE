@@ -3,8 +3,8 @@
 # Code   : Example usage for TMVA analyses                           #
 ######################################################################
 BINS = Main
-#ADD = exp_z.C
-DIC = VELO.cxx Station.cxx
+# ADD = create_tree.cxx
+DIC = VELO.cxx Station.cxx create_tree.cxx
 
 CXX = g++
 CCFLAGS = -O2 -ggdb -std=c++11
@@ -24,7 +24,7 @@ default : $(BINS) $(ADD)  $(DIC)
 # $(INCS): % : %.cxx
 # 	$(CXX)
 
-$(BINS): % : %.cxx VELO.h Station.h 
+$(BINS): % : %.cxx VELO.h Station.h create_tree.h
 	@echo -n "Building $@ ... "
 	$(CXX) $(CCFLAGS) $(DIC)  $(ADD) $<  $(addprefix -I, $(INCS))  $(shell root-config --libs)  $(ROOSTAT) -lMLP -lMinuit -lTreePlayer  -lXMLIO   -lm  -g -o $@
 	@echo "Done"
