@@ -17,9 +17,11 @@ using namespace std;
 int main()
 {
 
-  // Create tree
+  // Create trees
   create_tree("../data/EE_candidates_q2gamma_Final.root", "Bd2KstGEE",
-              "../data/EE_TRACKZ.root");
+              "../data/MCGEE_TRACKZ.root");
+  create_tree("../data/EE_candidates_jps.root", "Bd2KstJpsEE",
+              "../data/MCJPsEE_TRACKZ.root")
 
   cout << "Main is done." << endl;
 }

@@ -193,7 +193,6 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   int nentries = (int)T->GetEntries();
 
   // Create LHCb VELO
-
   VELO myVELO;
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
