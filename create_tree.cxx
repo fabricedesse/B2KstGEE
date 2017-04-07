@@ -91,6 +91,9 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   cout << "Cloned tree " << input_tree << "with number of entries = "
   << T->GetEntries() << endl ;
 
+  // BKGCAT
+  Int_t B0_BKGCAT;
+
   // Kst vertex
   Double_t Kst_TRUEORIGINVERTEX_X;
   Double_t Kst_TRUEORIGINVERTEX_Y;
@@ -108,7 +111,6 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   Double_t E2_TRUEORIGINVERTEX_X;
   Double_t E2_TRUEORIGINVERTEX_Y;
   Double_t E2_TRUEORIGINVERTEX_Z;
-
 
   // E momentum
   Double_t E1_TRUEP_X;
@@ -138,6 +140,8 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   Double_t E2_PHI = -1000;
 
   // Set branch addresses
+  T->SetBranchAddress("B0_BKGCAT", &B0_BKGCAT);
+
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_X", &Kst_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_Y", &Kst_TRUEORIGINVERTEX_Y);
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_Z", &Kst_TRUEORIGINVERTEX_Z);
@@ -197,10 +201,12 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
 
-    for(int i=0; i<nentries; i++)
-    {
-      T->GetEntry(i);
+  for(int i=0; i<nentries; i++)
+  {
+    T->GetEntry(i);
 
+    if ( B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10 )
+    {
       // Add expected first measurement z
       E1_TRUE_EXP_TRACK_FirstMeasurementZ =
             get_exp_firstMeasurementZ(E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
@@ -227,10 +233,9 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
 
       newTree->Fill();
     }
-
+  }
   newTree->Write();
   newFile.Write();
   cout << "Tree " << input_tree << " with number of entries = "
   << newTree->GetEntries() << " written in file " << output_file << endl ;
-
 }
