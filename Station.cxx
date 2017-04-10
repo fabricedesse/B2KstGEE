@@ -46,6 +46,13 @@ bool Station::IsLeft()
 }
 
 // Setters
+void Station::Set( int number, double z, bool isLeft)
+{
+  station_number = number;
+  station_z = z;
+  station_isLeft = isLeft;
+}
+
 void Station::SetNumber(int number)
 {
   station_number = number;

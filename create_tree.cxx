@@ -99,6 +99,14 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   Double_t Kst_TRUEORIGINVERTEX_Y;
   Double_t Kst_TRUEORIGINVERTEX_Z;
 
+  Double_t Kst_TRUEENDVERTEX_X;
+  Double_t Kst_TRUEENDVERTEX_Y;
+  Double_t Kst_TRUEENDVERTEX_Z;
+
+  Double_t Kst_ENDVERTEX_X;
+  Double_t Kst_ENDVERTEX_Y;
+  Double_t Kst_ENDVERTEX_Z;
+
   Double_t B0_ENDVERTEX_X;
   Double_t B0_ENDVERTEX_Y;
   Double_t B0_ENDVERTEX_Z;
@@ -145,6 +153,14 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_X", &Kst_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_Y", &Kst_TRUEORIGINVERTEX_Y);
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_Z", &Kst_TRUEORIGINVERTEX_Z);
+
+  T->SetBranchAddress("Kst_TRUEENDVERTEX_X", &Kst_TRUEENDVERTEX_X);
+  T->SetBranchAddress("Kst_TRUEENDVERTEX_Y", &Kst_TRUEENDVERTEX_Y);
+  T->SetBranchAddress("Kst_TRUEENDVERTEX_Z", &Kst_TRUEENDVERTEX_Z);
+
+  T->SetBranchAddress("Kst_ENDVERTEX_X", &Kst_ENDVERTEX_X);
+  T->SetBranchAddress("Kst_ENDVERTEX_Y", &Kst_ENDVERTEX_Y);
+  T->SetBranchAddress("Kst_ENDVERTEX_Z", &Kst_ENDVERTEX_Z);
 
   T->SetBranchAddress("E1_TRUEORIGINVERTEX_X", &E1_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("E1_TRUEORIGINVERTEX_Y", &E1_TRUEORIGINVERTEX_Y);
@@ -204,7 +220,7 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   for(int i=0; i<nentries; i++)
   {
     T->GetEntry(i);
-
+    
     if ( B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10 )
     {
       // Add expected first measurement z
@@ -216,9 +232,9 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
 
       E1_EXP_TRACK_FirstMeasurementZ =
             get_exp_firstMeasurementZ(E1_PX,E1_PY, E1_PZ,
-                                B0_ENDVERTEX_X,
-                                B0_ENDVERTEX_Y,
-                                B0_ENDVERTEX_Z, myVELO);
+                                Kst_ENDVERTEX_X,
+                                Kst_ENDVERTEX_Y,
+                                Kst_ENDVERTEX_Z, myVELO);
 
       E2_TRUE_EXP_TRACK_FirstMeasurementZ =
             get_exp_firstMeasurementZ(E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
@@ -227,9 +243,9 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
                                       E2_TRUEORIGINVERTEX_Z, myVELO);
       E2_EXP_TRACK_FirstMeasurementZ =
             get_exp_firstMeasurementZ(E2_PX,E2_PY, E2_PZ,
-                                B0_ENDVERTEX_X,
-                                B0_ENDVERTEX_Y,
-                                B0_ENDVERTEX_Z, myVELO);
+                                Kst_ENDVERTEX_X,
+                                Kst_ENDVERTEX_Y,
+                                Kst_ENDVERTEX_Z, myVELO);
 
       newTree->Fill();
     }

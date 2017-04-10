@@ -5,7 +5,7 @@
 //
 // Get z coordinates of the VELO station
 //
-// Output: z_ccordinates.txt text file with z coordinates of the VELO stations
+// Output: text file with z coordinates of the VELO stations
 //
 // Inputs:
 // TString input_file

@@ -36,6 +36,7 @@ double GetZ();
 bool IsLeft();
 
 // Setters
+void Set(int number, double z, bool isLeft);
 void SetNumber(int number);
 void SetZ(double z);
 void SetIsLeft(bool isLeft);

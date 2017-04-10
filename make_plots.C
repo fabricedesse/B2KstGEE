@@ -56,10 +56,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   //Declare histograms
   TH1F *E1_TRUEZvsZ = new TH1F("TRUEZvsZ",
        "FirstZ_KstGEE_recoTRUE - FirstZ",
-       10, -70, 70);
+       50, -70, 70);
   TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ",
        "FirstZ_KstEE_reco - FirstZ",
-       30, -500, 100);
+       50, -500, 100);
   TH1F *E1_TRUEFD_Z_short = new TH1F("E1_TRUEFD_Z_short",
         "JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| < 60",
         30, -10, 500);

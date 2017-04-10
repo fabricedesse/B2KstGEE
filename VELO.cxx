@@ -8,6 +8,7 @@
 //==============================================================================
 
 #include "VELO.h"
+#include "VELO_geometry.h"
 
 //==============================================================================
 // Constructur & Destructor
@@ -16,6 +17,7 @@
 // Default constructor
 VELO::VELO()
 {
+  /*
   // construct LHCb VELO
   double z_min = -175;
   int nb_central_stations = 16;
@@ -52,6 +54,18 @@ VELO::VELO()
                    VELO_stations.back().GetZ() + 35,1);
     Station s_right(VELO_stations.back().GetNumber() + 2,
                     VELO_stations.back().GetZ() + 50,0);
+    VELO_stations.push_back(s_left);
+    VELO_stations.push_back(s_right);
+  }
+*/
+
+  // Construct VELO
+  int *my_VELO_right = VELO_right();
+  int *my_VELO_left = VELO_left();
+  for (int i = 0; i < 42; i++)
+  {
+    Station s_left(i, my_VELO_left[i], 1);
+    Station s_right(i, my_VELO_right[i], 0);
     VELO_stations.push_back(s_left);
     VELO_stations.push_back(s_right);
   }
