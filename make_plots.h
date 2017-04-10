@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1F.h"
+#include "TH2F.h"
 
 void make_plots_MC(TString input_file, TString input_tree, TString output_folder);
 

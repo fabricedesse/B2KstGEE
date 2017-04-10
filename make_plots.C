@@ -32,7 +32,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   Double_t E1_EXP_TRACK_FirstMeasurementZ;
   Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ;
   Double_t E1_TRACK_FirstMeasurementZ;
-  Double_t E1_TRUEORIGINVERTEX_Z;
+  Double_t E1_TRUEORIGINVERTEX_Z, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_X;
   Double_t JPs_TRUEORIGINVERTEX_Z;
 
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ",
@@ -43,6 +43,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
                       &E1_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRUEORIGINVERTEX_Z",
                       &E1_TRUEORIGINVERTEX_Z);
+  T->SetBranchAddress("E1_TRUEORIGINVERTEX_Y",
+                      &E1_TRUEORIGINVERTEX_Y);
+  T->SetBranchAddress("E1_TRUEORIGINVERTEX_X",
+                      &E1_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z",
                       &JPs_TRUEORIGINVERTEX_Z);
 
@@ -51,20 +55,20 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   //Declare histograms
   TH1F *E1_TRUEZvsZ = new TH1F("TRUEZvsZ",
-       "MC B2KstGEE: FirstZ_KstGEE_recoTRUE - FirstZ",
+       "FirstZ_KstGEE_recoTRUE - FirstZ",
        10, -70, 70);
   TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ",
-       "MC B2KstGEE: FirstZ_KstEE_reco - FirstZ",
+       "FirstZ_KstEE_reco - FirstZ",
        30, -500, 100);
   TH1F *E1_TRUEFD_Z_short = new TH1F("E1_TRUEFD_Z_short",
-        "MC B2KstGEE: JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| < 60",
-        100, -10, 500);
+        "JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| < 60",
+        30, -10, 500);
   TH1F *E1_TRUEFD_Z_long = new TH1F("E1_TRUEFD_Z_long",
-        "MC B2KstGEE: JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| >= 60",
-        100, -10, 500);
-  TH1F *E1_Is1000 = new TH1F("E1_Is1000",
-        "MC B2KstGEE: FirstZ_recoTRUE if |(FirstZ_KstEE_reco - FirstZ)| >= 30 && JPs_TRUEFD_Z < 60 ",
-        100, -1100, 500);
+        "Ps_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| >= 60",
+        30, -10, 700);
+  TH2F *E1_convertion_pt = new TH2F("E1_convertion_pt",
+        "E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y",
+        100, -50, 50, 100, -50, 50);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -75,37 +79,30 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
     // Compute flight distance Z
     Double_t E1_TRUEFD_Z = E1_TRUEORIGINVERTEX_Z - JPs_TRUEORIGINVERTEX_Z;
 
-    // MC B2KstGEE: FirstZ_KstGEE_recoTRUE - FirstZ
     if (E1_TRUE_EXP_TRACK_FirstMeasurementZ != -1000)
     {
       E1_TRUEZvsZ->Fill(E1_TRUE_EXP_TRACK_FirstMeasurementZ -
                         E1_TRACK_FirstMeasurementZ);
+      E1_convertion_pt->Fill(E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y);
     }
 
 
     if (E1_EXP_TRACK_FirstMeasurementZ != -1000)
     {
-      // MC B2KstGEE: FirstZ_KstEE_reco - FirstZ
+      // FirstZ_KstEE_reco - FirstZ
       E1_KstEEZ_vs_KstGEEZ->Fill(E1_EXP_TRACK_FirstMeasurementZ -
                         E1_TRACK_FirstMeasurementZ);
 
-
-     if (abs((E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ)) < 60)
-     {
-       E1_TRUEFD_Z_short->Fill(E1_TRUEFD_Z);
+      if (abs((E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ)) < 60)
+      {
+        E1_TRUEFD_Z_short->Fill(E1_TRUEFD_Z);
+      }
+      else
+      {
+        E1_TRUEFD_Z_long->Fill(E1_TRUEFD_Z);
+      }
      }
-     else
-     {
-       E1_TRUEFD_Z_long->Fill(E1_TRUEFD_Z);
-
-       // E1_Is1000
-       if ( E1_TRUEFD_Z < 60 )
-       {
-         E1_Is1000->Fill(E1_TRUE_EXP_TRACK_FirstMeasurementZ);
-       }
-     }
-  }
-}
+   }
 
   newf->Write("",TObject::kOverwrite);
 
@@ -141,13 +138,14 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.pdf");
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.C");
 
-  E1_Is1000->GetXaxis()->SetTitle("FirstZ_KstEE_reco");
-  E1_Is1000->GetYaxis()->SetTitle("Nb of events");
-  E1_Is1000->GetYaxis()->SetTitleOffset(1.6);
-  E1_Is1000->Draw();
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_Is1000.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_Is1000.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_Is1000.C");
+  TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
+  E1_convertion_pt->GetXaxis()->SetTitle("E1_TRUEORIGINVERTEX_X");
+  E1_convertion_pt->GetYaxis()->SetTitle("E1_TRUEORIGINVERTEX_Y");
+  E1_convertion_pt->GetYaxis()->SetTitleOffset(1.6);
+  E1_convertion_pt->Draw("COLZ");
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.png");
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.pdf");
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.C");
 
   newf->Close();
   f->Close();
