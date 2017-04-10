@@ -29,9 +29,12 @@ void get_VELO_stations( TString input_file, TString input_tree)
   TFile *f = new TFile(input_file,"read");
   TTree *T = (TTree*)f->Get(input_tree);
 
-  Double_t z_position;
+  Double_t E1_z, E2_z, K_z, Pi_z;
 
-  T->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &z_position);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &E1_z);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementZ", &E2_z);
+  T->SetBranchAddress("K_TRACK_FirstMeasurementZ", &K_z);
+  T->SetBranchAddress("Pi_TRACK_FirstMeasurementZ", &Pi_z);
 
   std::vector<double> stations;
 
@@ -43,9 +46,24 @@ void get_VELO_stations( TString input_file, TString input_tree)
   {
     T->GetEntry(i);
 
-    if (std::find(stations.begin(),stations.end(), z_position) == stations.end())
+    if (std::find(stations.begin(),stations.end(), E1_z) == stations.end())
     {
-      stations.push_back(z_position);
+      stations.push_back(E1_z);
+    }
+
+    if(std::find(stations.begin(),stations.end(), E2_z) == stations.end())
+    {
+      stations.push_back(E2_z);
+    }
+
+    if(std::find(stations.begin(),stations.end(), K_z) == stations.end())
+    {
+      stations.push_back(K_z);
+    }
+
+    if(std::find(stations.begin(),stations.end(), Pi_z) == stations.end())
+    {
+      stations.push_back(Pi_z);
     }
   }
 
@@ -56,16 +74,8 @@ void get_VELO_stations( TString input_file, TString input_tree)
   ofstream myFile ("VELO_stations.txt");
   if (myFile.is_open())
   {
-    /*for (vector<double>::const_iterator i = stations.begin();
-          i != stations.end(); i++)
-          {
-            //myFile << "a line. \n";
-            myFile << "\t\t" << "0" << ", " << stations.at(i) << "\n";
-          }
-          */
     copy(stations.begin(), stations.end(), ostream_iterator<double>(myFile,"\n"));
     myFile.close();
-
   }
   else cout << "Unable to open file";
 }

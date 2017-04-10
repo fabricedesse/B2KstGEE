@@ -19,6 +19,7 @@ int main()
 {
 
   // Create trees
+  /*
   create_tree("../data/EE_candidates_q2gamma_Final.root", "Bd2KstGEE",
               "../data/MCGEE_TRACKZ.root");
 
@@ -26,7 +27,7 @@ int main()
               "../data/MCJPsEE_TRACKZ.root");
   create_tree("../data/EE_candidates_q2gamma_Final.root", "Bd2KstEE",
               "../data/MCEE_TRACKZ.root");
-
+*/
   // Make plots
   make_plots_MC("../data/MCGEE_TRACKZ.root", "Bd2KstGEE", "MC_GEE");
   make_plots_MC("../data/MCEE_TRACKZ.root", "Bd2KstEE", "MC_EE");

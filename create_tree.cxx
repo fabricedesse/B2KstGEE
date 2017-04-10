@@ -23,11 +23,11 @@ using namespace std;
 // Functions
 //==============================================================================
 
-Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
+TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
   Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y,
   Double_t mother_ENDVERTEX_Z, VELO myVELO)
 {
-  Double_t exp_FirstMeasurementZ = -1000;
+  TVector3 exp_FirstMeasurement(-1000,-1000,-1000);
 
   for ( Int_t i = 0; i < myVELO.GetNbStations(); i++ )
   {
@@ -38,29 +38,27 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
     // z position
     if ( ( z_VELO - mother_ENDVERTEX_Z ) >= 0 )
     {
-      Double_t exp_x = -1000;
-      Double_t exp_y = -1000;
       if (PZ != 0)
       {
-        exp_x = mother_ENDVERTEX_X
-          + ( PX/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
-        exp_y = mother_ENDVERTEX_Y
-          + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ;
+        exp_FirstMeasurement.SetX( mother_ENDVERTEX_X
+          + ( PX/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ) ;
+        exp_FirstMeasurement.SetY( mother_ENDVERTEX_Y
+          + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ) ;
       }
       else break;
 
-      TVector2 XY(exp_x,exp_y);
+      TVector2 XY(exp_FirstMeasurement.X(), exp_FirstMeasurement.Y())
 
-      // Check if (x,y) is on the left/right and if it corresponds to the
+      // Check if x is on the left/right and if it corresponds to the
       // isLeft/isRight of the tested VELO station
-      if ( ( exp_x > 0 && myStation.IsLeft() ) ||
-           (exp_x < 0 && !(myStation.IsLeft() ) ) )
+      if ( ( exp_FirstMeasurement.X() > 0 && myStation.IsLeft() ) ||
+           ( exp_FirstMeasurement.X() < 0 && !(myStation.IsLeft() ) ) )
       {
        // If (x,y) is in the VELO acceptance this is the expected first
        // measurement in z
        if ( myStation.IsInAcceptance(XY) )
        {
-         exp_FirstMeasurementZ = z_VELO;
+         exp_FirstMeasurement.SetZ(z_VELO);
          break;
        }
        else continue;
@@ -68,7 +66,7 @@ Double_t get_exp_firstMeasurementZ(Double_t PX, Double_t PY, Double_t PZ,
       else continue;
     }
   }
-  return exp_FirstMeasurementZ ;
+  return exp_FirstMeasurement ;
 }
 
 //==============================================================================
@@ -220,7 +218,7 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   for(int i=0; i<nentries; i++)
   {
     T->GetEntry(i);
-    
+
     if ( B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10 )
     {
       // Add expected first measurement z
