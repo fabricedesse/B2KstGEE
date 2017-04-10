@@ -47,7 +47,7 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
       }
       else break;
 
-      TVector2 XY(exp_FirstMeasurement.X(), exp_FirstMeasurement.Y())
+      TVector2 XY(exp_FirstMeasurement.X(), exp_FirstMeasurement.Y());
 
       // Check if x is on the left/right and if it corresponds to the
       // isLeft/isRight of the tested VELO station
@@ -140,6 +140,14 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ = -1000;
   Double_t E2_EXP_TRACK_FirstMeasurementZ = -1000;
   Double_t E2_TRUE_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementX = -1000;
   Double_t E1_TRUE_PHI = -1000;
   Double_t E1_PHI = -1000;
   Double_t E2_TRUE_PHI = -1000;
@@ -200,6 +208,34 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementZ =
     newTree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementZ",
     &E2_TRUE_EXP_TRACK_FirstMeasurementZ);
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementY =
+    newTree->Branch("E1_EXP_TRACK_FirstMeasurementY",
+    &E1_EXP_TRACK_FirstMeasurementY);
+  TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementY =
+    newTree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementY",
+    &E1_TRUE_EXP_TRACK_FirstMeasurementY);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementY =
+    newTree->Branch("E2_EXP_TRACK_FirstMeasurementY",
+    &E2_EXP_TRACK_FirstMeasurementY);
+  TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementY =
+    newTree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementY",
+    &E2_TRUE_EXP_TRACK_FirstMeasurementY);
+
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementX =
+    newTree->Branch("E1_EXP_TRACK_FirstMeasurementX",
+    &E1_EXP_TRACK_FirstMeasurementX);
+  TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementX =
+    newTree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementX",
+    &E1_TRUE_EXP_TRACK_FirstMeasurementX);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementX =
+    newTree->Branch("E2_EXP_TRACK_FirstMeasurementX",
+    &E2_EXP_TRACK_FirstMeasurementX);
+  TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementX =
+    newTree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementX",
+    &E2_TRUE_EXP_TRACK_FirstMeasurementX);
+
   TBranch *b_E1_TRUE_PHI = newTree->Branch("E1_TRUE_PHI", &E1_TRUE_PHI);
   TBranch *b_E1_PHI = newTree->Branch("E1_PHI", &E1_PHI);
   TBranch *b_E2_TRUE_PHI = newTree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
@@ -221,29 +257,41 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
 
     if ( B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10 )
     {
-      // Add expected first measurement z
-      E1_TRUE_EXP_TRACK_FirstMeasurementZ =
-            get_exp_firstMeasurementZ(E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
-                                      E1_TRUEORIGINVERTEX_X,
-                                      E1_TRUEORIGINVERTEX_Y,
-                                      E1_TRUEORIGINVERTEX_Z, myVELO);
+      TVector3 E1_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
+                          E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
+                          E1_TRUEORIGINVERTEX_X,
+                          E1_TRUEORIGINVERTEX_Y,
+                          E1_TRUEORIGINVERTEX_Z, myVELO);
+      TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
+                          E1_PX,E1_PY, E1_PZ,
+                          Kst_ENDVERTEX_X,
+                          Kst_ENDVERTEX_Y,
+                          Kst_ENDVERTEX_Z, myVELO);
+      TVector3 E2_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
+                          E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
+                          E2_TRUEORIGINVERTEX_X,
+                          E2_TRUEORIGINVERTEX_Y,
+                          E2_TRUEORIGINVERTEX_Z, myVELO);
+      TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
+                          E2_PX,E2_PY, E2_PZ,
+                          Kst_ENDVERTEX_X,
+                          Kst_ENDVERTEX_Y,
+                          Kst_ENDVERTEX_Z, myVELO);
 
-      E1_EXP_TRACK_FirstMeasurementZ =
-            get_exp_firstMeasurementZ(E1_PX,E1_PY, E1_PZ,
-                                Kst_ENDVERTEX_X,
-                                Kst_ENDVERTEX_Y,
-                                Kst_ENDVERTEX_Z, myVELO);
+      E1_TRUE_EXP_TRACK_FirstMeasurementZ = E1_TRUE_EXP_TRACK_FirstMeasurement.Z();
+      E1_EXP_TRACK_FirstMeasurementZ = E1_EXP_TRACK_FirstMeasurement.Z();
+      E2_TRUE_EXP_TRACK_FirstMeasurementZ = E2_TRUE_EXP_TRACK_FirstMeasurement.Z();
+      E2_EXP_TRACK_FirstMeasurementZ = E2_EXP_TRACK_FirstMeasurement.Z();
 
-      E2_TRUE_EXP_TRACK_FirstMeasurementZ =
-            get_exp_firstMeasurementZ(E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
-                                      E2_TRUEORIGINVERTEX_X,
-                                      E2_TRUEORIGINVERTEX_Y,
-                                      E2_TRUEORIGINVERTEX_Z, myVELO);
-      E2_EXP_TRACK_FirstMeasurementZ =
-            get_exp_firstMeasurementZ(E2_PX,E2_PY, E2_PZ,
-                                Kst_ENDVERTEX_X,
-                                Kst_ENDVERTEX_Y,
-                                Kst_ENDVERTEX_Z, myVELO);
+      E1_TRUE_EXP_TRACK_FirstMeasurementY = E1_TRUE_EXP_TRACK_FirstMeasurement.Y();
+      E1_EXP_TRACK_FirstMeasurementY = E1_EXP_TRACK_FirstMeasurement.Y();
+      E2_TRUE_EXP_TRACK_FirstMeasurementY = E2_TRUE_EXP_TRACK_FirstMeasurement.Y();
+      E2_EXP_TRACK_FirstMeasurementY = E2_EXP_TRACK_FirstMeasurement.Y();
+
+      E1_TRUE_EXP_TRACK_FirstMeasurementX = E1_TRUE_EXP_TRACK_FirstMeasurement.X();
+      E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
+      E2_TRUE_EXP_TRACK_FirstMeasurementX = E2_TRUE_EXP_TRACK_FirstMeasurement.X();
+      E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
 
       newTree->Fill();
     }
