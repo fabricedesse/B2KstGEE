@@ -1,16 +1,28 @@
 //==============================================================================
 // Author: Fabrice Desse
 //
-// Date: 2016-04-05
+// Date: 2016-04-10
 //
-// Class Station: station of the VELO
+// Geometry of the VELO
 //
 //==============================================================================
 
-#ifndef VELO_geometry_h
-#define VELO_geometry_h
+#ifndef CalorimeterConstants_h
+#define CalorimeterConstants_h
 
-double *VELO_left();
-double *VELO_right();
+double* VELO_left();
+double* VELO_right();
+
+namespace VELO_geo
+{
+  //Beam Position
+  static double beamX = 0.3;
+  static double beamY = 0.;
+
+  //Triangle
+  static double triangle_height = 2.5;
+  static double triangle_baseY = 7.5;
+  static double triangle_baseLength = 5.;
+}
 
 #endif

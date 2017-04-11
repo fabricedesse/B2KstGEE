@@ -116,10 +116,6 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
         "E2_TRUEORIGINVERTEX_X vs E2_TRUEORIGINVERTEX_Y",
         100, -50, 50, 100, -50, 50);
 
-  TH1F *E1_compX = new TH1F("E1_compX", "E1_compX", 100, -1, 1);
-  TH1F *E1_compY = new TH1F("E1_compY", "E1_compY", 100, -1, 1);
-
-
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
   for (Long64_t i=0; i<nentries; i++)
@@ -180,20 +176,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
          E2_TRUEFD_Z_long->Fill(E2_TRUEFD_Z);
        }
       }
-
-      // E1_comp
-      if (E1_TRUE_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ < -10)
-      {
-
-        E1_compX->Fill( (E1_TRUEORIGINVERTEX_X + ( E1_TRUEP_X/E1_TRUEP_Z )
-                  * ( E1_TRACK_FirstMeasurementZ - E1_TRUEORIGINVERTEX_Z ) )
-                  - E1_TRACK_FirstMeasurementX);
-        E1_compY->Fill( (E1_TRUEORIGINVERTEX_Y + ( E1_TRUEP_Y/E1_TRUEP_Z )
-                  * ( E1_TRACK_FirstMeasurementZ - E1_TRUEORIGINVERTEX_Z ) )
-                  - E1_TRACK_FirstMeasurementY);
-      }
-
-   }
+    }
 
   newf->Write("",TObject::kOverwrite);
 
@@ -261,22 +244,6 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.png");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.pdf");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.C");
-
-  E1_compX->GetXaxis()->SetTitle("E1_compX");
-  E1_compX->GetYaxis()->SetTitle("Nb of events");
-  E1_compX->GetYaxis()->SetTitleOffset(1.6);
-  E1_compX->Draw();
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.C");
-
-  E1_compY->GetXaxis()->SetTitle("E1_compY");
-  E1_compY->GetYaxis()->SetTitle("Nb of events");
-  E1_compY->GetYaxis()->SetTitleOffset(1.6);
-  E1_compY->Draw();
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.C");
 
 
   TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
