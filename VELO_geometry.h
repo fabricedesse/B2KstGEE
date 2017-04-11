@@ -10,7 +10,7 @@
 #ifndef VELO_geometry_h
 #define VELO_geometry_h
 
-int *VELO_left();
-int *VELO_right();
+double *VELO_left();
+double *VELO_right();
 
 #endif

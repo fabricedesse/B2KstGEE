@@ -8,9 +8,9 @@
 //==============================================================================
 
 // Right stations
-int *VELO_left()
+double *VELO_left()
 {
-  static int VELO_l[42];
+  static double VELO_l[42];
   VELO_l[0]=-176;
   VELO_l[1]=-174.5;
   VELO_l[2]=-146;
@@ -58,9 +58,9 @@ int *VELO_left()
 }
 
 // Left stations
-int *VELO_right()
+double *VELO_right()
 {
-  static int VELO_r[42];
+  static double VELO_r[42];
   VELO_r[0]=-161;
   VELO_r[1]=-159;
   VELO_r[2]=-130.753;

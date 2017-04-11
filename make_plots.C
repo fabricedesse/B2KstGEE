@@ -31,8 +31,9 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   Double_t E1_EXP_TRACK_FirstMeasurementZ;
   Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ;
-  Double_t E1_TRACK_FirstMeasurementZ;
+  Double_t E1_TRACK_FirstMeasurementZ, E1_TRACK_FirstMeasurementY, E1_TRACK_FirstMeasurementX;
   Double_t E1_TRUEORIGINVERTEX_Z, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_X;
+  Double_t E1_TRUEP_X, E1_TRUEP_Y, E1_TRUEP_Z;
   Double_t JPs_TRUEORIGINVERTEX_Z;
 
   Double_t E2_EXP_TRACK_FirstMeasurementZ;
@@ -47,6 +48,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
                       &E1_TRUE_EXP_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementZ",
                       &E1_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementY",
+                      &E1_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementX",
+                      &E1_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E1_TRUEORIGINVERTEX_Z",
                       &E1_TRUEORIGINVERTEX_Z);
   T->SetBranchAddress("E1_TRUEORIGINVERTEX_Y",
@@ -55,6 +60,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
                       &E1_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z",
                       &JPs_TRUEORIGINVERTEX_Z);
+  T->SetBranchAddress("E1_TRUEP_X", &E1_TRUEP_X);
+  T->SetBranchAddress("E1_TRUEP_Y", &E1_TRUEP_Y);
+  T->SetBranchAddress("E1_TRUEP_Z", &E1_TRUEP_Z);
+
 
   T->SetBranchAddress("E2_EXP_TRACK_FirstMeasurementZ",
                       &E2_EXP_TRACK_FirstMeasurementZ);
@@ -106,6 +115,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E2_convertion_pt = new TH2F("E2_convertion_pt",
         "E2_TRUEORIGINVERTEX_X vs E2_TRUEORIGINVERTEX_Y",
         100, -50, 50, 100, -50, 50);
+
+  TH1F *E1_compX = new TH1F("E1_compX", "E1_compX", 100, -1, 1);
+  TH1F *E1_compY = new TH1F("E1_compY", "E1_compY", 100, -1, 1);
+
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -168,6 +181,18 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
        }
       }
 
+      // E1_comp
+      if (E1_TRUE_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ < -10)
+      {
+
+        E1_compX->Fill( (E1_TRUEORIGINVERTEX_X + ( E1_TRUEP_X/E1_TRUEP_Z )
+                  * ( E1_TRACK_FirstMeasurementZ - E1_TRUEORIGINVERTEX_Z ) )
+                  - E1_TRACK_FirstMeasurementX);
+        E1_compY->Fill( (E1_TRUEORIGINVERTEX_Y + ( E1_TRUEP_Y/E1_TRUEP_Z )
+                  * ( E1_TRACK_FirstMeasurementZ - E1_TRUEORIGINVERTEX_Z ) )
+                  - E1_TRACK_FirstMeasurementY);
+      }
+
    }
 
   newf->Write("",TObject::kOverwrite);
@@ -177,32 +202,32 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   E1_TRUEZvsZ->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEZvsZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
 
   E1_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
   E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
   E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
   E1_KstEEZ_vs_KstGEEZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.C");
 
   E1_TRUEFD_Z_short->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E1_TRUEFD_Z_short->GetYaxis()->SetTitle("Nb of events");
   E1_TRUEFD_Z_short->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEFD_Z_short->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.C");
 
   E1_TRUEFD_Z_long->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E1_TRUEFD_Z_long->GetYaxis()->SetTitle("Nb of events");
   E1_TRUEFD_Z_long->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEFD_Z_long->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.C");
 
 
   E2_TRUEZvsZ->GetXaxis()->SetTitle("FirstZ_KstGEE_recoTRUE - FirstZ");
@@ -210,32 +235,49 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   E2_TRUEZvsZ->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEZvsZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.C");
 
   E2_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
   E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
   E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
   E2_KstEEZ_vs_KstGEEZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.C");
 
   E2_TRUEFD_Z_short->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E2_TRUEFD_Z_short->GetYaxis()->SetTitle("Nb of events");
   E2_TRUEFD_Z_short->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEFD_Z_short->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.C");
 
   E2_TRUEFD_Z_long->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E2_TRUEFD_Z_long->GetYaxis()->SetTitle("Nb of events");
   E2_TRUEFD_Z_long->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEFD_Z_long->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.png");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.pdf");
-  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.C");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.C");
+
+  E1_compX->GetXaxis()->SetTitle("E1_compX");
+  E1_compX->GetYaxis()->SetTitle("Nb of events");
+  E1_compX->GetYaxis()->SetTitleOffset(1.6);
+  E1_compX->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.png");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compX.C");
+
+  E1_compY->GetXaxis()->SetTitle("E1_compY");
+  E1_compY->GetYaxis()->SetTitle("Nb of events");
+  E1_compY->GetYaxis()->SetTitleOffset(1.6);
+  E1_compY->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.png");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_compY.C");
+
 
   TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
   E1_convertion_pt->GetXaxis()->SetTitle("E1_TRUEORIGINVERTEX_X");
@@ -243,16 +285,16 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   E1_convertion_pt->GetYaxis()->SetTitleOffset(1.6);
   E1_convertion_pt->Draw("COLZ");
   cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.png");
-  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.pdf");
-  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.C");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.C");
 
   E2_convertion_pt->GetXaxis()->SetTitle("E2_TRUEORIGINVERTEX_X");
   E2_convertion_pt->GetYaxis()->SetTitle("E2_TRUEORIGINVERTEX_Y");
   E2_convertion_pt->GetYaxis()->SetTitleOffset(1.6);
   E2_convertion_pt->Draw("COLZ");
   cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.png");
-  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.pdf");
-  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.C");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.C");
 
 
   newf->Close();

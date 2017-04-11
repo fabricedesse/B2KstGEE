@@ -60,8 +60,8 @@ VELO::VELO()
 */
 
   // Construct VELO
-  int *my_VELO_right = VELO_right();
-  int *my_VELO_left = VELO_left();
+  double *my_VELO_right = VELO_right();
+  double *my_VELO_left = VELO_left();
   for (int i = 0; i < 42; i++)
   {
     Station s_left(i, my_VELO_left[i], 1);
