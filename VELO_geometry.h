@@ -10,8 +10,12 @@
 #ifndef CalorimeterConstants_h
 #define CalorimeterConstants_h
 
+#include "TVector2.h"
+
 double* VELO_left();
 double* VELO_right();
+
+bool isInAcceptance(TVector2 XY);
 
 namespace VELO_geo
 {
@@ -22,7 +26,7 @@ namespace VELO_geo
   //Triangle
   static double triangle_height = 2.5;
   static double triangle_baseY = 7.5;
-  static double triangle_baseLength = 5.;
+  static double triangle_baseLength = 2.5;
 }
 
 #endif

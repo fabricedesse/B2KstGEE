@@ -9,6 +9,8 @@
 
 #include "VELO_geometry.h"
 
+using namespace VELO_geo;
+
 // Right stations
 double *VELO_left()
 {
@@ -107,4 +109,56 @@ double *VELO_right()
   VELO_r[41]=751;
 
   return VELO_r;
+}
+
+// Geometry of each station
+bool isInAcceptance(TVector2 XY)
+{
+  // Rescale center (0,0) to (beamX,beamY)
+  //TVector2 XYbeam = 
+  if ( XY.Mod() < 8.2 || XY.Mod() > 49.1 ) return false;
+  // triangle
+  else if ( XY.X() > beamX - triangle_baseLength
+            && XY.X() < beamX + triangle_baseLength )
+  {
+    // right triangle
+    if ( XY.X() <= beamX )
+    {
+      // lower triangle
+      if ( XY.Y() > beamY
+           && XY.Y() < triangle_height/triangle_baseLength*XY.X()
+           + beamY+triangle_baseY+triangle_height )
+      {
+        return false;
+      }
+      // upper triangle
+      if ( XY.Y() < beamY
+           && XY.Y() > -triangle_height/triangle_baseLength*XY.X()
+           + beamY-triangle_baseY-triangle_height )
+      {
+        return false;
+      }
+      else return true;
+    }
+    // left triangle
+    else
+    {
+      // lower triangle
+      if ( XY.Y() > beamY
+           && XY.Y() < -triangle_height/triangle_baseLength*XY.X()
+           + beamY+triangle_baseY+triangle_height )
+      {
+        return false;
+      }
+      //upper triangle
+      if ( XY.Y() < beamY
+           && XY.Y() > triangle_height/triangle_baseLength*XY.X()
+           + beamY-triangle_baseY-triangle_height )
+      {
+        return false;
+      }
+      else return true;
+    }
+  }
+  else return true;
 }

@@ -10,8 +10,6 @@
 #ifndef Station_h
 #define Station_h
 
-#include "TVector2.h"
-
 class Station {
 
 public:
@@ -40,9 +38,6 @@ void Set(int number, double z, bool isLeft);
 void SetNumber(int number);
 void SetZ(double z);
 void SetIsLeft(bool isLeft);
-
-// Other
-bool IsInAcceptance(TVector2 XY);
 
 //==============================================================================
 // Private attributes

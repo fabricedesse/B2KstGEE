@@ -67,10 +67,3 @@ void Station::SetIsLeft(bool isLeft)
 {
   station_isLeft = isLeft;
 }
-
-// Other
-bool Station::IsInAcceptance( TVector2 XY)
-{
-  if ( XY.Mod() > 8.2 && XY.Mod() < 49.1 ) return 1;
-  else return 0;
-}

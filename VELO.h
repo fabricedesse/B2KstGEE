@@ -11,6 +11,7 @@
 #define VELO_h
 
 #include "Station.h"
+#include "VELO_geometry.h"
 #include <iostream>
 #include <vector>
 

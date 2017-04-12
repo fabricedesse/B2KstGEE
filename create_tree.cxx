@@ -56,7 +56,7 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
       {
        // If (x,y) is in the VELO acceptance this is the expected first
        // measurement in z
-       if ( myStation.IsInAcceptance(XY) )
+       if ( isInAcceptance(XY) )
        {
          exp_FirstMeasurement.SetZ(z_VELO);
          break;
@@ -251,6 +251,18 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
 
+  // test IsInAcceptance
+  /*
+  TVector2 inCircle(-5, 3);
+  TVector2 inUpperT(0.5,8.3);
+  TVector2 inLowerT(-0.4,-8.5);
+  TVector2 inAcc(-2,-10);
+
+  cout << "inCircle = " << boolalpha << isInAcceptance(inCircle) << endl;
+  cout << "inUpperT = " << boolalpha << isInAcceptance(inUpperT) << endl;
+  cout << "inLowerT = " << boolalpha << isInAcceptance(inLowerT) << endl;
+  cout << "inAcc = " << boolalpha << isInAcceptance(inAcc) << endl;
+*/
   for(int i=0; i<nentries; i++)
   {
     T->GetEntry(i);
