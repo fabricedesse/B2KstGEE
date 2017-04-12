@@ -56,7 +56,7 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
       {
        // If (x,y) is in the VELO acceptance this is the expected first
        // measurement in z
-       if ( isInAcceptance(XY) )
+       if ( isInAcceptance(XY, false) )
        {
          exp_FirstMeasurement.SetZ(z_VELO);
          break;

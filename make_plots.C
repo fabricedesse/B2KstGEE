@@ -85,32 +85,32 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   //Declare histograms
   TH1F *E1_TRUEZvsZ = new TH1F("TRUEZvsZ",
-       "FirstZ_KstGEE_recoTRUE - FirstZ",
+       "FirstZ_recoTRUE - FirstZ",
        50, -70, 70);
   TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ",
-       "FirstZ_KstEE_reco - FirstZ",
+       "FirstZ_reco - FirstZ",
        50, -500, 100);
   TH1F *E1_TRUEFD_Z_short = new TH1F("E1_TRUEFD_Z_short",
-        "JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| < 60",
+        "JPs_TRUEFD_Z if |(FirstZ_reco - FirstZ)| < 60",
         30, -10, 500);
   TH1F *E1_TRUEFD_Z_long = new TH1F("E1_TRUEFD_Z_long",
-        "Ps_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| >= 60",
+        "Ps_TRUEFD_Z if |(FirstZ_reco - FirstZ)| >= 60",
         30, -10, 700);
   TH2F *E1_convertion_pt = new TH2F("E1_convertion_pt",
         "E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y",
         100, -50, 50, 100, -50, 50);
 
   TH1F *E2_TRUEZvsZ = new TH1F("TRUEZvsZ",
-       "FirstZ_KstGEE_recoTRUE - FirstZ",
+       "FirstZ_recoTRUE - FirstZ",
        50, -70, 70);
   TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ",
-       "FirstZ_KstEE_reco - FirstZ",
+       "FirstZ_reco - FirstZ",
        50, -500, 100);
   TH1F *E2_TRUEFD_Z_short = new TH1F("E2_TRUEFD_Z_short",
-        "JPs_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| < 60",
+        "JPs_TRUEFD_Z if |(FirstZ_reco - FirstZ)| < 60",
         30, -10, 500);
   TH1F *E2_TRUEFD_Z_long = new TH1F("E2_TRUEFD_Z_long",
-        "Ps_TRUEFD_Z if |(FirstZ_KstEE_reco - FirstZ)| >= 60",
+        "Ps_TRUEFD_Z if |(FirstZ_reco - FirstZ)| >= 60",
         30, -10, 700);
   TH2F *E2_convertion_pt = new TH2F("E2_convertion_pt",
         "E2_TRUEORIGINVERTEX_X vs E2_TRUEORIGINVERTEX_Y",

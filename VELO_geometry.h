@@ -15,12 +15,12 @@
 double* VELO_left();
 double* VELO_right();
 
-bool isInAcceptance(TVector2 XY);
+bool isInAcceptance(TVector2 XY, bool makeTriangle);
 
 namespace VELO_geo
 {
   //Beam Position
-  static double beamX = 0.3;
+  static double beamX = 0.6;
   static double beamY = 0.;
 
   //Triangle
