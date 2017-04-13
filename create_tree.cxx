@@ -51,8 +51,8 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
 
       // Check if x is on the left/right and if it corresponds to the
       // isLeft/isRight of the tested VELO station
-      if ( ( exp_FirstMeasurement.X() > 0 && myStation.IsLeft() ) ||
-           ( exp_FirstMeasurement.X() < 0 && !(myStation.IsLeft() ) ) )
+      if ((exp_FirstMeasurement.X() > VELO_geo::beamX && myStation.IsLeft() ) ||
+          (exp_FirstMeasurement.X() < VELO_geo::beamX && !(myStation.IsLeft())))
       {
        // If (x,y) is in the VELO acceptance this is the expected first
        // measurement in z
