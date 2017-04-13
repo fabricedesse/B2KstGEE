@@ -25,7 +25,7 @@ using namespace std;
 
 TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
   Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y,
-  Double_t mother_ENDVERTEX_Z, VELO myVELO)
+  Double_t mother_ENDVERTEX_Z, VELO myVELO, Beam myBeam)
 {
   TVector3 exp_FirstMeasurement(-1000,-1000,-1000);
 
@@ -51,12 +51,12 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
 
       // Check if x is on the left/right and if it corresponds to the
       // isLeft/isRight of the tested VELO station
-      if ((exp_FirstMeasurement.X() > VELO_geo::beamX && myStation.IsLeft() ) ||
-          (exp_FirstMeasurement.X() < VELO_geo::beamX && !(myStation.IsLeft())))
+      if ((exp_FirstMeasurement.X() > myBeam.GetX() && myStation.IsLeft() ) ||
+          (exp_FirstMeasurement.X() < myBeam.GetX() && !(myStation.IsLeft())))
       {
        // If (x,y) is in the VELO acceptance this is the expected first
        // measurement in z
-       if ( isInAcceptance(XY, false) )
+       if ( isInAcceptance(XY, myBeam, false) )
        {
          exp_FirstMeasurement.SetZ(z_VELO);
          break;
@@ -91,6 +91,15 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
 
   // BKGCAT
   Int_t B0_BKGCAT;
+
+  // B0
+  Double_t B0_TRUEORIGINVERTEX_X;
+  Double_t B0_TRUEORIGINVERTEX_Y;
+  Double_t B0_TRUEORIGINVERTEX_Z;
+
+  Double_t B0_OWNPV_X;
+  Double_t B0_OWNPV_Y;
+  Double_t B0_OWNPV_Z;
 
   // Kst vertex
   Double_t Kst_TRUEORIGINVERTEX_X;
@@ -155,6 +164,14 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
 
   // Set branch addresses
   T->SetBranchAddress("B0_BKGCAT", &B0_BKGCAT);
+
+  T->SetBranchAddress("B0_TRUEORIGINVERTEX_X", &B0_TRUEORIGINVERTEX_X);
+  T->SetBranchAddress("B0_TRUEORIGINVERTEX_Y", &B0_TRUEORIGINVERTEX_Y);
+  T->SetBranchAddress("B0_TRUEORIGINVERTEX_Z", &B0_TRUEORIGINVERTEX_Z);
+
+  T->SetBranchAddress("B0_OWNPV_X", &B0_OWNPV_X);
+  T->SetBranchAddress("B0_OWNPV_Y", &B0_OWNPV_Y);
+  T->SetBranchAddress("B0_OWNPV_Z", &B0_OWNPV_Z);
 
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_X", &Kst_TRUEORIGINVERTEX_X);
   T->SetBranchAddress("Kst_TRUEORIGINVERTEX_Y", &Kst_TRUEORIGINVERTEX_Y);
@@ -251,18 +268,24 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
 
-  // test IsInAcceptance
-  /*
-  TVector2 inCircle(-5, 3);
-  TVector2 inUpperT(0.5,8.3);
-  TVector2 inLowerT(-0.4,-8.5);
-  TVector2 inAcc(-2,-10);
+  // Create LHC beam
+  Beam myBeam;
 
-  cout << "inCircle = " << boolalpha << isInAcceptance(inCircle) << endl;
-  cout << "inUpperT = " << boolalpha << isInAcceptance(inUpperT) << endl;
-  cout << "inLowerT = " << boolalpha << isInAcceptance(inLowerT) << endl;
-  cout << "inAcc = " << boolalpha << isInAcceptance(inAcc) << endl;
-*/
+  T->Draw("B0_TRUEORIGINVERTEX_X>>hTRUE_beamX",
+          "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
+  TH1F *hTRUE_beamX = (TH1F*)gDirectory->Get("hTRUE_beamX");
+  myBeam.SetX( hTRUE_beamX->GetMean() );
+  //myBeam.SetX(0.6);
+
+  T->Draw("B0_TRUEORIGINVERTEX_Y>>hTRUE_beamY",
+          "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
+  TH1F *hTRUE_beamY = (TH1F*)gDirectory->Get("hTRUE_beamY");
+  myBeam.SetY( hTRUE_beamY->GetMean() );
+  //myBeam.SetY(0.);
+  // test
+  cout << myBeam.GetX() << endl;
+  cout << myBeam.GetY() << endl;
+
   for(int i=0; i<nentries; i++)
   {
     T->GetEntry(i);
@@ -273,22 +296,22 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
                           E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
                           E1_TRUEORIGINVERTEX_X,
                           E1_TRUEORIGINVERTEX_Y,
-                          E1_TRUEORIGINVERTEX_Z, myVELO);
+                          E1_TRUEORIGINVERTEX_Z, myVELO, myBeam);
       TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
                           E1_PX,E1_PY, E1_PZ,
                           Kst_ENDVERTEX_X,
                           Kst_ENDVERTEX_Y,
-                          Kst_ENDVERTEX_Z, myVELO);
+                          Kst_ENDVERTEX_Z, myVELO, myBeam);
       TVector3 E2_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
                           E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
                           E2_TRUEORIGINVERTEX_X,
                           E2_TRUEORIGINVERTEX_Y,
-                          E2_TRUEORIGINVERTEX_Z, myVELO);
+                          E2_TRUEORIGINVERTEX_Z, myVELO, myBeam);
       TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
                           E2_PX,E2_PY, E2_PZ,
                           Kst_ENDVERTEX_X,
                           Kst_ENDVERTEX_Y,
-                          Kst_ENDVERTEX_Z, myVELO);
+                          Kst_ENDVERTEX_Z, myVELO, myBeam);
 
       E1_TRUE_EXP_TRACK_FirstMeasurementZ = E1_TRUE_EXP_TRACK_FirstMeasurement.Z();
       E1_EXP_TRACK_FirstMeasurementZ = E1_EXP_TRACK_FirstMeasurement.Z();

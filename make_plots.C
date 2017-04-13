@@ -30,22 +30,30 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   Long64_t nentries = T->GetEntries();
 
   Double_t E1_EXP_TRACK_FirstMeasurementZ;
-  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ,
+           E1_TRUE_EXP_TRACK_FirstMeasurementY,
+           E1_TRUE_EXP_TRACK_FirstMeasurementX;
   Double_t E1_TRACK_FirstMeasurementZ, E1_TRACK_FirstMeasurementY, E1_TRACK_FirstMeasurementX;
   Double_t E1_TRUEORIGINVERTEX_Z, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_X;
   Double_t E1_TRUEP_X, E1_TRUEP_Y, E1_TRUEP_Z;
   Double_t JPs_TRUEORIGINVERTEX_Z;
 
   Double_t E2_EXP_TRACK_FirstMeasurementZ;
-  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementZ;
-  Double_t E2_TRACK_FirstMeasurementZ;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementZ,
+           E2_TRUE_EXP_TRACK_FirstMeasurementY,
+           E2_TRUE_EXP_TRACK_FirstMeasurementX;
+  Double_t E2_TRACK_FirstMeasurementZ, E2_TRACK_FirstMeasurementY, E2_TRACK_FirstMeasurementX;
   Double_t E2_TRUEORIGINVERTEX_Z, E2_TRUEORIGINVERTEX_Y, E2_TRUEORIGINVERTEX_X;
-
+  Double_t E2_TRUEP_X, E2_TRUEP_Y, E2_TRUEP_Z;
 
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ",
                       &E1_EXP_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRUE_EXP_TRACK_FirstMeasurementZ",
                       &E1_TRUE_EXP_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E1_TRUE_EXP_TRACK_FirstMeasurementY",
+                      &E1_TRUE_EXP_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E1_TRUE_EXP_TRACK_FirstMeasurementX",
+                      &E1_TRUE_EXP_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementZ",
                       &E1_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementY",
@@ -69,16 +77,25 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
                       &E2_EXP_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E2_TRUE_EXP_TRACK_FirstMeasurementZ",
                       &E2_TRUE_EXP_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E2_TRUE_EXP_TRACK_FirstMeasurementY",
+                      &E2_TRUE_EXP_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E2_TRUE_EXP_TRACK_FirstMeasurementX",
+                      &E2_TRUE_EXP_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E2_TRACK_FirstMeasurementZ",
                       &E2_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementY",
+                      &E2_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementX",
+                      &E2_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E2_TRUEORIGINVERTEX_Z",
                       &E2_TRUEORIGINVERTEX_Z);
   T->SetBranchAddress("E2_TRUEORIGINVERTEX_Y",
                       &E2_TRUEORIGINVERTEX_Y);
   T->SetBranchAddress("E2_TRUEORIGINVERTEX_X",
                       &E2_TRUEORIGINVERTEX_X);
-  T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z",
-                      &JPs_TRUEORIGINVERTEX_Z);
+  T->SetBranchAddress("E2_TRUEP_X", &E2_TRUEP_X);
+  T->SetBranchAddress("E2_TRUEP_Y", &E2_TRUEP_Y);
+  T->SetBranchAddress("E2_TRUEP_Z", &E2_TRUEP_Z);
 
   // Output file
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
@@ -99,6 +116,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E1_convertion_pt = new TH2F("E1_convertion_pt",
         "E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y",
         100, -50, 50, 100, -50, 50);
+  TH2F *E1_missed = new TH2F("E1_missed", "E1 missed hits",
+        100, -20, 20, 100, -20, 20);
+  TH2F *E1_false_hits = new TH2F("E1_false_hits", "E1 false hits",
+        100, -20, 20, 100, -20, 20);
 
   TH1F *E2_TRUEZvsZ = new TH1F("TRUEZvsZ",
        "FirstZ_recoTRUE - FirstZ",
@@ -115,6 +136,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E2_convertion_pt = new TH2F("E2_convertion_pt",
         "E2_TRUEORIGINVERTEX_X vs E2_TRUEORIGINVERTEX_Y",
         100, -50, 50, 100, -50, 50);
+  TH2F *E2_missed = new TH2F("E2_missed", "E2 missed hits",
+        100, -20, 20, 100, -20, 20);
+  TH2F *E2_false_hits = new TH2F("E2_false_hits", "E2 false hits",
+        100, -20, 20, 100, -20, 20);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -147,6 +172,22 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
       {
         E1_TRUEFD_Z_long->Fill(E1_TRUEFD_Z);
       }
+
+      // missed and false hits
+      if ( (E1_TRUE_EXP_TRACK_FirstMeasurementZ -
+            E1_TRACK_FirstMeasurementZ) > 10 &&
+            E1_TRUEORIGINVERTEX_Z < E1_TRACK_FirstMeasurementZ )
+      {
+        E1_missed->Fill(E1_TRACK_FirstMeasurementX, E1_TRACK_FirstMeasurementY);
+      }
+
+      if ( (E1_TRUE_EXP_TRACK_FirstMeasurementZ -
+            E1_TRACK_FirstMeasurementZ) < -10 &&
+            E1_TRUEORIGINVERTEX_Z < E1_TRACK_FirstMeasurementZ )
+      {
+        E1_false_hits->Fill(E1_TRUE_EXP_TRACK_FirstMeasurementX,
+                            E1_TRUE_EXP_TRACK_FirstMeasurementY);
+      }
      }
 
      // For E2
@@ -174,6 +215,22 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
        else
        {
          E2_TRUEFD_Z_long->Fill(E2_TRUEFD_Z);
+       }
+
+       // missed and false hits
+       if ( (E2_TRUE_EXP_TRACK_FirstMeasurementZ -
+             E2_TRACK_FirstMeasurementZ) > 10 &&
+             E2_TRUEORIGINVERTEX_Z < E2_TRACK_FirstMeasurementZ )
+       {
+         E2_missed->Fill(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY);
+       }
+
+       if ( (E2_TRUE_EXP_TRACK_FirstMeasurementZ -
+             E2_TRACK_FirstMeasurementZ) < -10 &&
+             E2_TRUEORIGINVERTEX_Z < E2_TRACK_FirstMeasurementZ )
+       {
+         E2_false_hits->Fill(E2_TRUE_EXP_TRACK_FirstMeasurementX,
+                             E2_TRUE_EXP_TRACK_FirstMeasurementY);
        }
       }
     }
@@ -255,6 +312,22 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.pdf");
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_convertion_pt.C");
 
+  E1_missed->GetXaxis()->SetTitle("E1_TRACK_FirstMeasurementX");
+  E1_missed->GetYaxis()->SetTitle("E1_TRACK_FirstMeasurementY");
+  E1_missed->GetYaxis()->SetTitleOffset(1.6);
+  E1_missed->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_missed.png");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_missed.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_missed.C");
+
+  E1_false_hits->GetXaxis()->SetTitle("E1_TRUE_EXP_TRACK_FirstMeasurementX");
+  E1_false_hits->GetYaxis()->SetTitle("E1_TRUE_EXP_TRACK_FirstMeasurementY");
+  E1_false_hits->GetYaxis()->SetTitleOffset(1.6);
+  E1_false_hits->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_false_hits.png");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_false_hits.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_false_hits.C");
+
   E2_convertion_pt->GetXaxis()->SetTitle("E2_TRUEORIGINVERTEX_X");
   E2_convertion_pt->GetYaxis()->SetTitle("E2_TRUEORIGINVERTEX_Y");
   E2_convertion_pt->GetYaxis()->SetTitleOffset(1.6);
@@ -262,6 +335,22 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.png");
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.pdf");
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_convertion_pt.C");
+
+  E2_missed->GetXaxis()->SetTitle("E2_TRACK_FirstMeasurementX");
+  E2_missed->GetYaxis()->SetTitle("E2_TRACK_FirstMeasurementY");
+  E2_missed->GetYaxis()->SetTitleOffset(1.6);
+  E2_missed->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_missed.png");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_missed.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_missed.C");
+
+  E2_false_hits->GetXaxis()->SetTitle("E2_TRUE_EXP_TRACK_FirstMeasurementX");
+  E2_false_hits->GetYaxis()->SetTitle("E2_TRUE_EXP_TRACK_FirstMeasurementY");
+  E2_false_hits->GetYaxis()->SetTitleOffset(1.6);
+  E2_false_hits->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.png");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.pdf");
+  //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.C");
 
 
   newf->Close();

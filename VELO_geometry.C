@@ -112,10 +112,13 @@ double *VELO_right()
 }
 
 // Geometry of each station
-bool isInAcceptance(TVector2 XY, bool makeTriangle)
+bool isInAcceptance(TVector2 XY, Beam myBeam, bool makeTriangle)
 {
   // Rescale center (0,0) to (beamX,beamY)
-  TVector2 XYbeam(-beamX,-beamY);
+  double beamX = myBeam.GetX();
+  double beamY = myBeam.GetY();
+
+  TVector2 XYbeam( -beamX, -beamY );
   TVector2 XY_recentered = XYbeam + XY;
   if ( XY_recentered.Mod() < 8.2 || XY_recentered.Mod() > 49.1 ) return false;
   // triangle

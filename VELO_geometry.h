@@ -7,21 +7,22 @@
 //
 //==============================================================================
 
-#ifndef CalorimeterConstants_h
-#define CalorimeterConstants_h
+#ifndef VELO_geometry_h
+#define VELO_geometry_h
 
 #include "TVector2.h"
+#include "Beam.h"
 
 double* VELO_left();
 double* VELO_right();
 
-bool isInAcceptance(TVector2 XY, bool makeTriangle);
+bool isInAcceptance(TVector2 XY, Beam myBeam, bool makeTriangle);
 
 namespace VELO_geo
 {
   //Beam Position
-  static double beamX = 0.6;
-  static double beamY = 0.;
+  //static double beamX = 0.6;
+  //static double beamY = 0.;
 
   //Triangle
   static double triangle_height = 2.5;
