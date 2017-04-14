@@ -16,5 +16,7 @@
 #include "TH2F.h"
 
 void make_plots_MC(TString input_file, TString input_tree, TString output_folder);
+void make_plots_data(TString input_file, TString input_tree, TString output_folder);
+
 
 #endif

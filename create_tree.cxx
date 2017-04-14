@@ -260,9 +260,8 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
 
   //============================================================================
-  // Fill and write tree
+  // Create LHCb VELO and LHC beam
   //============================================================================
-  int nentries = (int)T->GetEntries();
 
   // Create LHCb VELO
   VELO myVELO;
@@ -294,8 +293,10 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TH1F *h_beamY = (TH1F*)gDirectory->Get("h_beamY");
   myBeam.SetY( h_beamY->GetMean() );
 
-  cout << myBeamTRUE.GetX() << " " << myBeam.GetX() << endl;
-  cout << myBeamTRUE.GetY() << " " << myBeam.GetY() << endl;
+  //============================================================================
+  // Fill and write tree
+  //============================================================================
+  int nentries = (int)T->GetEntries();
 
   for(int i=0; i<nentries; i++)
   {
@@ -368,6 +369,10 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t K_PE, K_PX, K_PY, K_PZ;
   Double_t Pi_PE, Pi_PX, Pi_PY, Pi_PZ;
 
+  Double_t Kst_ENDVERTEX_X;
+  Double_t Kst_ENDVERTEX_Y;
+  Double_t Kst_ENDVERTEX_Z;
+
   Double_t JPs_TRUE_M = 3096.900;
   Double_t B0_M_cut = 5175.;
 
@@ -390,6 +395,27 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("Pi_PX", &Pi_PX);
   T->SetBranchAddress("Pi_PY", &Pi_PY);
   T->SetBranchAddress("Pi_PZ", &Pi_PZ);
+
+  T->SetBranchAddress("Kst_ENDVERTEX_X", &Kst_ENDVERTEX_X);
+  T->SetBranchAddress("Kst_ENDVERTEX_Y", &Kst_ENDVERTEX_Y);
+  T->SetBranchAddress("Kst_ENDVERTEX_Z", &Kst_ENDVERTEX_Z);
+
+  // New variables
+  Double_t E1_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E1_EXP_TRACK_FirstMeasurementZ", &E1_EXP_TRACK_FirstMeasurementZ);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E2_EXP_TRACK_FirstMeasurementZ", &E2_EXP_TRACK_FirstMeasurementZ);
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementY = newTree->Branch("E1_EXP_TRACK_FirstMeasurementY", &E1_EXP_TRACK_FirstMeasurementY);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementY = newTree->Branch("E2_EXP_TRACK_FirstMeasurementY", &E2_EXP_TRACK_FirstMeasurementY);
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementX = newTree->Branch("E1_EXP_TRACK_FirstMeasurementX", &E1_EXP_TRACK_FirstMeasurementX);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementX = newTree->Branch("E2_EXP_TRACK_FirstMeasurementX", &E2_EXP_TRACK_FirstMeasurementX);
 
   //============================================================================
   // Fill and write tree
@@ -429,6 +455,18 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
     // Select events
     if ( B0_M_fake > B0_M_cut )
     {
+      TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_PX, E1_PY, E1_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
+      TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_PX, E2_PY, E2_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
+
+      E1_EXP_TRACK_FirstMeasurementZ = E1_EXP_TRACK_FirstMeasurement.Z();
+      E2_EXP_TRACK_FirstMeasurementZ = E2_EXP_TRACK_FirstMeasurement.Z();
+
+      E1_EXP_TRACK_FirstMeasurementY = E1_EXP_TRACK_FirstMeasurement.Y();
+      E2_EXP_TRACK_FirstMeasurementY = E2_EXP_TRACK_FirstMeasurement.Y();
+
+      E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
+      E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
+
       newTree->Fill();
     }
   }

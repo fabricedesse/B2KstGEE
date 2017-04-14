@@ -357,3 +357,78 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   f->Close();
 
 }
+
+void make_plots_data(TString input_file, TString input_tree, TString output_folder)
+{
+
+  // Input file
+  TFile *f = TFile::Open(input_file,"read");
+  if (f == 0) {
+    printf("Error: cannot open file");
+    return;
+  }
+  TTree *T = (TTree*)f->Get(input_tree);
+  Long64_t nentries = T->GetEntries();
+
+  Double_t E1_EXP_TRACK_FirstMeasurementZ;
+  Double_t E1_TRACK_FirstMeasurementZ, E1_TRACK_FirstMeasurementY, E1_TRACK_FirstMeasurementX;
+
+  Double_t E2_EXP_TRACK_FirstMeasurementZ;
+  Double_t E2_TRACK_FirstMeasurementZ, E2_TRACK_FirstMeasurementY, E2_TRACK_FirstMeasurementX;
+
+  T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ", &E1_EXP_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &E1_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
+
+
+  T->SetBranchAddress("E2_EXP_TRACK_FirstMeasurementZ", &E2_EXP_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementZ", &E2_TRACK_FirstMeasurementZ);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementY", &E2_TRACK_FirstMeasurementY);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
+
+  // Output file
+  TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
+
+  //Declare histograms
+  TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 50, -500, 100);
+
+  TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 50, -500, 100);
+
+  TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
+
+  for (Long64_t i=0; i<nentries; i++)
+  {
+    T->GetEntry(i);
+
+    if (E1_EXP_TRACK_FirstMeasurementZ != -1000)
+    {
+      // FirstZ_KstEE_reco - FirstZ
+      E1_KstEEZ_vs_KstGEEZ->Fill(E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ);
+    }
+
+    if (E2_EXP_TRACK_FirstMeasurementZ != -1000)
+    {
+      // FirstZ_KstEE_reco - FirstZ
+      E2_KstEEZ_vs_KstGEEZ->Fill(E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ);
+    }
+  }
+
+  newf->Write("",TObject::kOverwrite);
+
+  E1_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
+  E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
+  E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
+  E1_KstEEZ_vs_KstGEEZ->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.png");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.C");
+
+  E2_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
+  E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
+  E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
+  E2_KstEEZ_vs_KstGEEZ->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.png");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.C");
+}

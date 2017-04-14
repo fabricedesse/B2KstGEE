@@ -24,12 +24,13 @@ int main()
   // create_tree_MC("../data/EE_candidates_jps.root", "Bd2KstJPsEE","../data/MCJPsEE_TRACKZ.root");
   // create_tree_MC("../data/EE_candidates_q2gamma_Final.root", "Bd2KstEE","../data/MCEE_TRACKZ.root");
 
-  //create_tree_JPs("../data/EE_candidates_jps.root", "KstJPsEE", "../data/JPsEE_massCut.root");
+  create_tree_JPs("../data/EE_candidates_jps.root", "KstJPsEE", "../data/JPsEE_massCut.root");
 
   // Make plots
   make_plots_MC("../data/MCGEE_TRACKZ.root", "Bd2KstGEE", "MC_GEE");
   // make_plots_MC("../data/MCEE_TRACKZ.root", "Bd2KstEE", "MC_EE");
   // make_plots_MC("../data/MCJPsEE_TRACKZ.root", "Bd2KstJPsEE", "MC_JPsEE");
+  make_plots_data("../data/JPsEE_massCut.root", "KstJPsEE", "JPsEE");
 
 
   cout << "Main is done." << endl;
