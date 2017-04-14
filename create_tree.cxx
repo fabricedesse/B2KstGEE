@@ -3,9 +3,10 @@
 //
 // Date: 2016-04-05
 //
-// Creates a tree with kinematic information on the dielectron pair in B2KstGEE
-// adding expected first z measurement in the VELO and phi angle.
+// Create tree for MC or data.
 //
+// void create_tree_MC()
+// void create_tree_JPs()
 // Output: None
 //
 // Inputs:
@@ -73,7 +74,7 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
 // Programm begins here
 //==============================================================================
 
-void create_tree (TString input_file, TString input_tree, TString output_file)
+void create_tree_MC (TString input_file, TString input_tree, TString output_file)
 {
 
   //============================================================================
@@ -269,22 +270,32 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   myVELO.PrintStations();
 
   // Create LHC beam
-  Beam myBeam;
+  Beam myBeamTRUE;
 
   T->Draw("B0_TRUEORIGINVERTEX_X>>hTRUE_beamX",
           "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
   TH1F *hTRUE_beamX = (TH1F*)gDirectory->Get("hTRUE_beamX");
-  myBeam.SetX( hTRUE_beamX->GetMean() );
-  //myBeam.SetX(0.6);
+  myBeamTRUE.SetX( hTRUE_beamX->GetMean() );
 
   T->Draw("B0_TRUEORIGINVERTEX_Y>>hTRUE_beamY",
           "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
   TH1F *hTRUE_beamY = (TH1F*)gDirectory->Get("hTRUE_beamY");
-  myBeam.SetY( hTRUE_beamY->GetMean() );
-  //myBeam.SetY(0.);
-  // test
-  cout << myBeam.GetX() << endl;
-  cout << myBeam.GetY() << endl;
+  myBeamTRUE.SetY( hTRUE_beamY->GetMean() );
+
+  Beam myBeam;
+
+  T->Draw("B0_OWNPV_X>>h_beamX",
+          "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
+  TH1F *h_beamX = (TH1F*)gDirectory->Get("h_beamX");
+  myBeam.SetX( h_beamX->GetMean() );
+
+  T->Draw("B0_OWNPV_Y>>h_beamY",
+          "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
+  TH1F *h_beamY = (TH1F*)gDirectory->Get("h_beamY");
+  myBeam.SetY( h_beamY->GetMean() );
+
+  cout << myBeamTRUE.GetX() << " " << myBeam.GetX() << endl;
+  cout << myBeamTRUE.GetY() << " " << myBeam.GetY() << endl;
 
   for(int i=0; i<nentries; i++)
   {
@@ -296,7 +307,7 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
                           E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
                           E1_TRUEORIGINVERTEX_X,
                           E1_TRUEORIGINVERTEX_Y,
-                          E1_TRUEORIGINVERTEX_Z, myVELO, myBeam);
+                          E1_TRUEORIGINVERTEX_Z, myVELO, myBeamTRUE);
       TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
                           E1_PX,E1_PY, E1_PZ,
                           Kst_ENDVERTEX_X,
@@ -335,4 +346,96 @@ void create_tree (TString input_file, TString input_tree, TString output_file)
   newFile.Write();
   cout << "Tree " << input_tree << " with number of entries = "
   << newTree->GetEntries() << " written in file " << output_file << endl ;
+}
+
+
+void create_tree_JPs(TString input_file, TString input_tree, TString output_file)
+{
+  //============================================================================
+  // Open and clone tree, set branch addresses
+  //============================================================================
+
+  TFile *f = new TFile(input_file,"read");
+  TTree *T = (TTree*)f->Get(input_tree);
+
+  TFile newFile(output_file,"RECREATE");
+  TTree *newTree = T->CloneTree(0);
+
+  cout << "Cloned tree " << input_tree << "with number of entries = " << T->GetEntries() << endl ;
+
+  Double_t E1_PE, E1_PX, E1_PY, E1_PZ;
+  Double_t E2_PE, E2_PX, E2_PY, E2_PZ;
+  Double_t K_PE, K_PX, K_PY, K_PZ;
+  Double_t Pi_PE, Pi_PX, Pi_PY, Pi_PZ;
+
+  Double_t JPs_TRUE_M = 3096.900;
+  Double_t B0_M_cut = 5175.;
+
+  T->SetBranchAddress("E1_PE", &E1_PE);
+  T->SetBranchAddress("E1_PX", &E1_PX);
+  T->SetBranchAddress("E1_PY", &E1_PY);
+  T->SetBranchAddress("E1_PZ", &E1_PZ);
+
+  T->SetBranchAddress("E2_PE", &E2_PE);
+  T->SetBranchAddress("E2_PX", &E2_PX);
+  T->SetBranchAddress("E2_PY", &E2_PY);
+  T->SetBranchAddress("E2_PZ", &E2_PZ);
+
+  T->SetBranchAddress("K_PE", &K_PE);
+  T->SetBranchAddress("K_PX", &K_PX);
+  T->SetBranchAddress("K_PY", &K_PY);
+  T->SetBranchAddress("K_PZ", &K_PZ);
+
+  T->SetBranchAddress("Pi_PE", &Pi_PE);
+  T->SetBranchAddress("Pi_PX", &Pi_PX);
+  T->SetBranchAddress("Pi_PY", &Pi_PY);
+  T->SetBranchAddress("Pi_PZ", &Pi_PZ);
+
+  //============================================================================
+  // Fill and write tree
+  //============================================================================
+  int nentries = (int)T->GetEntries();
+
+  // Create LHCb VELO
+  VELO myVELO;
+  cout << "LHCb VELO has been created" << endl;
+  myVELO.PrintStations();
+
+  // Create LHC beam
+  Beam myBeam;
+
+  T->Draw("B0_OWNPV_X>>h_beamX");
+  TH1F *h_beamX = (TH1F*)gDirectory->Get("h_beamX");
+  myBeam.SetX( h_beamX->GetMean() );
+
+  T->Draw("B0_OWNPV_Y>>h_beamY");
+  TH1F *h_beamY = (TH1F*)gDirectory->Get("h_beamY");
+  myBeam.SetY( h_beamY->GetMean() );
+
+  for ( int i=0; i<nentries; i++)
+  {
+    T->GetEntry(i);
+    // Force EE to be at JPs mass
+    TLorentzVector P_EE_fake;
+    P_EE_fake.SetXYZM( E1_PX + E2_PX, E1_PY + E2_PY, E1_PZ + E2_PZ, JPs_TRUE_M );
+
+    // Fake m(KpiEE)
+    TLorentzVector P_K( K_PX, K_PY, K_PZ, K_PE );
+    TLorentzVector P_Pi( Pi_PX, Pi_PY, Pi_PZ, Pi_PE );
+    TLorentzVector P_B0_fake;
+    P_B0_fake = P_K + P_Pi + P_EE_fake;
+    Double_t B0_M_fake = P_B0_fake.M();
+
+    // Select events
+    if ( B0_M_fake > B0_M_cut )
+    {
+      newTree->Fill();
+    }
+  }
+
+  newTree->Write();
+  newFile.Write();
+  cout << "Tree " << input_tree << " with number of entries = "
+  << newTree->GetEntries() << " written in file " << output_file << endl ;
+
 }
