@@ -141,6 +141,8 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E2_false_hits = new TH2F("E2_false_hits", "E2 false hits",
         100, -20, 20, 100, -20, 20);
 
+  TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 50, -500, 100);
+
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
   for (Long64_t i=0; i<nentries; i++)
@@ -233,6 +235,12 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
                              E2_TRUE_EXP_TRACK_FirstMeasurementY);
        }
       }
+
+      // avg of E1 and E2
+      if ( E1_EXP_TRACK_FirstMeasurementZ != -1000 && E2_EXP_TRACK_FirstMeasurementZ != -1000 )
+      {
+        E1_E2_avg->Fill( ( E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ + E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ )/2. );
+      }
     }
 
   newf->Write("",TObject::kOverwrite);
@@ -301,6 +309,14 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.png");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.pdf");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.C");
+
+  E1_E2_avg->GetXaxis()->SetTitle("FirstZ_reco - FirstZ");
+  E1_E2_avg->GetYaxis()->SetTitle("Nb of events");
+  E1_E2_avg->GetYaxis()->SetTitleOffset(1.6);
+  E1_E2_avg->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_avg.png");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
+  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
 
 
   TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
