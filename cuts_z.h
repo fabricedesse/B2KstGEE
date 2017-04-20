@@ -18,6 +18,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TGraph2D.h"
+#include "TGraph.h"
 #include "TCanvas.h"
 #include "TH1F.h"
 

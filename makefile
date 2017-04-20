@@ -4,7 +4,7 @@
 ######################################################################
 BINS = Main
 # ADD = create_tree.cxx
-DIC = VELO.cxx Station.cxx create_tree.cxx make_plots.C VELO_geometry.C Beam.cxx cuts_z.C
+DIC = VELO.cxx Station.cxx create_tree.cxx make_plots.C VELO_geometry.C Beam.cxx cuts_z.cxx
 
 CXX = g++
 CCFLAGS = -O2 -ggdb -std=c++11

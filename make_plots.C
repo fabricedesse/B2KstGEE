@@ -106,7 +106,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
        50, -70, 70);
   TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ",
        "FirstZ_reco - FirstZ",
-       50, -500, 100);
+       100, -500, 100);
   TH1F *E1_TRUEFD_Z_short = new TH1F("E1_TRUEFD_Z_short",
         "JPs_TRUEFD_Z if |(FirstZ_reco - FirstZ)| < 60",
         30, -10, 500);
@@ -126,7 +126,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
        50, -70, 70);
   TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ",
        "FirstZ_reco - FirstZ",
-       50, -500, 100);
+       100, -500, 100);
   TH1F *E2_TRUEFD_Z_short = new TH1F("E2_TRUEFD_Z_short",
         "JPs_TRUEFD_Z if |(FirstZ_reco - FirstZ)| < 60",
         30, -10, 500);
@@ -141,7 +141,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E2_false_hits = new TH2F("E2_false_hits", "E2 false hits",
         100, -20, 20, 100, -20, 20);
 
-  TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 50, -500, 100);
+  TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -407,9 +407,11 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
 
   //Declare histograms
-  TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 50, -500, 100);
+  TH1F *E1_KstEEZ_vs_KstGEEZ = new TH1F("E1_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 100, -500, 100);
 
-  TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 50, -500, 100);
+  TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 100, -500, 100);
+
+    TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -427,6 +429,12 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
     {
       // FirstZ_KstEE_reco - FirstZ
       E2_KstEEZ_vs_KstGEEZ->Fill(E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ);
+    }
+
+    // avg of E1 and E2
+    if ( E1_EXP_TRACK_FirstMeasurementZ != -1000 && E2_EXP_TRACK_FirstMeasurementZ != -1000 )
+    {
+      E1_E2_avg->Fill( ( E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ + E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ )/2. );
     }
   }
 
@@ -447,4 +455,10 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.png");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.pdf");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.C");
+
+  E1_E2_avg->GetXaxis()->SetTitle("FirstZ_reco - FirstZ");
+  E1_E2_avg->GetYaxis()->SetTitle("Nb of events");
+  E1_E2_avg->GetYaxis()->SetTitleOffset(1.6);
+  E1_E2_avg->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_avg.png");
 }
