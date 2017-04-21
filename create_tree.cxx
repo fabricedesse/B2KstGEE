@@ -394,6 +394,11 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t Kst_ENDVERTEX_Y;
   Double_t Kst_ENDVERTEX_Z;
 
+  Double_t E1_TRACK_FirstMeasurementX;
+  Double_t E1_TRACK_FirstMeasurementY;
+  Double_t E2_TRACK_FirstMeasurementX;
+  Double_t E2_TRACK_FirstMeasurementY;
+
   Double_t JPs_TRUE_M = 3096.900;
   Double_t B0_M_cut = 5175.;
 
@@ -421,6 +426,12 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("Kst_ENDVERTEX_Y", &Kst_ENDVERTEX_Y);
   T->SetBranchAddress("Kst_ENDVERTEX_Z", &Kst_ENDVERTEX_Z);
 
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
+  T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
+
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
+  T->SetBranchAddress("E2_TRACK_FirstMeasurementY", &E2_TRACK_FirstMeasurementY);
+
   // New variables
   Double_t E1_EXP_TRACK_FirstMeasurementZ = -1000;
   Double_t E2_EXP_TRACK_FirstMeasurementZ = -1000;
@@ -428,6 +439,8 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t E2_EXP_TRACK_FirstMeasurementY = -1000;
   Double_t E1_EXP_TRACK_FirstMeasurementX = -1000;
   Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E1_XY_FROM_BEAM = -1000;
+  Double_t E2_XY_FROM_BEAM = -1000;
 
   TBranch *b_E1_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E1_EXP_TRACK_FirstMeasurementZ", &E1_EXP_TRACK_FirstMeasurementZ);
   TBranch *b_E2_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E2_EXP_TRACK_FirstMeasurementZ", &E2_EXP_TRACK_FirstMeasurementZ);
@@ -437,6 +450,9 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
 
   TBranch *b_E1_EXP_TRACK_FirstMeasurementX = newTree->Branch("E1_EXP_TRACK_FirstMeasurementX", &E1_EXP_TRACK_FirstMeasurementX);
   TBranch *b_E2_EXP_TRACK_FirstMeasurementX = newTree->Branch("E2_EXP_TRACK_FirstMeasurementX", &E2_EXP_TRACK_FirstMeasurementX);
+
+  TBranch *b_E1_XY_FROM_BEAM = newTree->Branch("E1_XY_FROM_BEAM", &E1_XY_FROM_BEAM);
+  TBranch *b_E2_XY_FROM_BEAM = newTree->Branch("E2_XY_FROM_BEAM", &E2_XY_FROM_BEAM);
 
   //============================================================================
   // Fill and write tree
@@ -487,6 +503,20 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
 
       E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
       E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
+
+      // Rescale center (0,0) to (beamX,beamY)
+      Double_t beamX = myBeam.GetX();
+      Double_t beamY = myBeam.GetY();
+      TVector2 XYbeam( -beamX, -beamY );
+
+      // Calculated distance of XY FirstMeasurement from beam axis
+      TVector2 E1_XY(E1_TRACK_FirstMeasurementX, E1_TRACK_FirstMeasurementY);
+      TVector2 E1_XY_recentered = XYbeam + E1_XY;
+      E1_XY_FROM_BEAM = E1_XY_recentered.Mod();
+
+      TVector2 E2_XY(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY);
+      TVector2 E2_XY_recentered = XYbeam + E2_XY;
+      E2_XY_FROM_BEAM = E2_XY_recentered.Mod();
 
       newTree->Fill();
     }

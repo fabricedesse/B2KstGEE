@@ -22,10 +22,10 @@ int main()
 
   // Create trees
 
-  create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstGEE","../data/MCGEE_TRACKZ.root");
-  create_tree_MC("../data/EE_candidates_jps.root", "Bd2KstJPsEE","../data/MCJPsEE_TRACKZ.root");
-  create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstEE","../data/MCEE_TRACKZ.root");
-
+  // create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstGEE","../data/MCGEE_TRACKZ.root");
+  // create_tree_MC("../data/EE_candidates_jps.root", "Bd2KstJPsEE","../data/MCJPsEE_TRACKZ.root");
+  // create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstEE","../data/MCEE_TRACKZ.root");
+  //
   create_tree_JPs("../data/EE_candidates_jps.root", "KstJPsEE", "../data/JPsEE_massCut.root");
 
 
@@ -36,7 +36,7 @@ int main()
   // make_plots_data("../data/JPsEE_massCut.root", "KstJPsEE", "JPsEE");
 
   // Make efficiency plots
-  //plot_cut();
+  plot_cut();
 
 
   cout << "Main is done." << endl;
