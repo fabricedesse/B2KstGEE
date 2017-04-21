@@ -34,11 +34,13 @@ void cuts_z()
   Double_t EE_E2_EXP_TRACK_FirstMeasurementZ;
   Double_t EE_E1_TRACK_FirstMeasurementZ;
   Double_t EE_E2_TRACK_FirstMeasurementZ;
+  Double_t EE_JPs_ENDVERTEX_ZERR;
 
   TEE->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ", &EE_E1_EXP_TRACK_FirstMeasurementZ);
   TEE->SetBranchAddress("E2_EXP_TRACK_FirstMeasurementZ", &EE_E2_EXP_TRACK_FirstMeasurementZ);
   TEE->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &EE_E1_TRACK_FirstMeasurementZ);
   TEE->SetBranchAddress("E2_TRACK_FirstMeasurementZ", &EE_E2_TRACK_FirstMeasurementZ);
+  TEE->SetBranchAddress("JPs_ENDVERTEX_ZERR", &EE_JPs_ENDVERTEX_ZERR);
 
 
   // Bd2KstJPsEE control channel
@@ -55,11 +57,13 @@ void cuts_z()
   Double_t JPs_E2_EXP_TRACK_FirstMeasurementZ;
   Double_t JPs_E1_TRACK_FirstMeasurementZ;
   Double_t JPs_E2_TRACK_FirstMeasurementZ;
+  Double_t JPs_JPs_ENDVERTEX_ZERR;
 
   TJPs->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ", &JPs_E1_EXP_TRACK_FirstMeasurementZ);
   TJPs->SetBranchAddress("E2_EXP_TRACK_FirstMeasurementZ", &JPs_E2_EXP_TRACK_FirstMeasurementZ);
   TJPs->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &JPs_E1_TRACK_FirstMeasurementZ);
   TJPs->SetBranchAddress("E2_TRACK_FirstMeasurementZ", &JPs_E2_TRACK_FirstMeasurementZ);
+  TJPs->SetBranchAddress("JPs_ENDVERTEX_ZERR", &JPs_JPs_ENDVERTEX_ZERR);
 
 
   // Bd2KstGEE background
@@ -76,18 +80,21 @@ void cuts_z()
   Double_t GEE_E2_EXP_TRACK_FirstMeasurementZ;
   Double_t GEE_E1_TRACK_FirstMeasurementZ;
   Double_t GEE_E2_TRACK_FirstMeasurementZ;
+  Double_t GEE_JPs_ENDVERTEX_ZERR;
 
   TGEE->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ", &GEE_E1_EXP_TRACK_FirstMeasurementZ);
   TGEE->SetBranchAddress("E2_EXP_TRACK_FirstMeasurementZ", &GEE_E2_EXP_TRACK_FirstMeasurementZ);
   TGEE->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &GEE_E1_TRACK_FirstMeasurementZ);
   TGEE->SetBranchAddress("E2_TRACK_FirstMeasurementZ", &GEE_E2_TRACK_FirstMeasurementZ);
+  TGEE->SetBranchAddress("JPs_ENDVERTEX_ZERR", &GEE_JPs_ENDVERTEX_ZERR);
 
   //============================================================================
   // Cuts config
   //============================================================================
 
-  Double_t cut_min = -200;
-  Double_t cut_max = 20;
+  // FirstMeasurementZ cut
+  Double_t cut_min = -120;
+  Double_t cut_max = 10;
   Int_t nb_loop = 100;
   Double_t cut_step = ( cut_max - cut_min ) / float( nb_loop );
 
@@ -134,6 +141,8 @@ void cuts_z()
 
     grEE->SetPoint(i, sig_efficiency_E1, my_cut, bkg_rejection_E1 );
     grJPs->SetPoint(i, control_efficiency_E1, my_cut, bkg_rejection_E1 );
+
+    // std::cout << "sig_eff= " << control_efficiency_E1 << " bkg_rej= " << bkg_rejection_E1 << " cut= " << my_cut << std::endl;
 
     grEE1D_E1->SetPoint( i, sig_efficiency_E1, bkg_rejection_E1 );
     grJPs1D_E1->SetPoint( i, control_efficiency_E1, bkg_rejection_E1 );
