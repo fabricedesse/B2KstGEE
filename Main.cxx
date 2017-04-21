@@ -13,7 +13,7 @@
 #include "Station.h"
 #include "create_tree.h"
 #include "make_plots.h"
-#include "cuts_z.h"
+#include "plot_cut.h"
 
 using namespace std;
 
@@ -22,11 +22,11 @@ int main()
 
   // Create trees
 
-  // create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstGEE","../data/MCGEE_TRACKZ.root");
-  // create_tree_MC("../data/EE_candidates_jps.root", "Bd2KstJPsEE","../data/MCJPsEE_TRACKZ.root");
-  // create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstEE","../data/MCEE_TRACKZ.root");
-  //
-  // create_tree_JPs("../data/EE_candidates_jps.root", "KstJPsEE", "../data/JPsEE_massCut.root");
+  create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstGEE","../data/MCGEE_TRACKZ.root");
+  create_tree_MC("../data/EE_candidates_jps.root", "Bd2KstJPsEE","../data/MCJPsEE_TRACKZ.root");
+  create_tree_MC("../data/EE_candidates_gamma_20160928.root", "Bd2KstEE","../data/MCEE_TRACKZ.root");
+
+  create_tree_JPs("../data/EE_candidates_jps.root", "KstJPsEE", "../data/JPsEE_massCut.root");
 
 
   // Make plots
@@ -36,7 +36,7 @@ int main()
   // make_plots_data("../data/JPsEE_massCut.root", "KstJPsEE", "JPsEE");
 
   // Make efficiency plots
-  cuts_z();
+  //plot_cut();
 
 
   cout << "Main is done." << endl;

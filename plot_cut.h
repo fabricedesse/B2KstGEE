@@ -11,8 +11,8 @@
 //
 //==============================================================================
 
-#ifndef cuts_z_h
-#define cuts_z_h
+#ifndef plot_cut_h
+#define plot_cut_h
 
 
 #include <iostream>
@@ -23,6 +23,6 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 
-void cuts_z();
+void plot_cut();
 
 #endif
