@@ -70,18 +70,6 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
   return exp_FirstMeasurement ;
 }
 
-Double_t GetPhi(Double_t PX, Double_t PY)
-{
-  TVector2 PXY(PX, PY);
-
-  if ( PY >= 0 )
-  {
-    return acos( PX / PXY.Mag() );
-  }
-
-  else return TMath::Pi() + acos ( PX / PXY.Mag() );
-}
-
 //==============================================================================
 // Programm begins here
 //==============================================================================
@@ -323,26 +311,11 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
 
     if ( B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10 )
     {
-      TVector3 E1_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
-                          E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z,
-                          E1_TRUEORIGINVERTEX_X,
-                          E1_TRUEORIGINVERTEX_Y,
-                          E1_TRUEORIGINVERTEX_Z, myVELO, myBeamTRUE);
-      TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
-                          E1_PX,E1_PY, E1_PZ,
-                          Kst_ENDVERTEX_X,
-                          Kst_ENDVERTEX_Y,
-                          Kst_ENDVERTEX_Z, myVELO, myBeam);
-      TVector3 E2_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
-                          E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z,
-                          E2_TRUEORIGINVERTEX_X,
-                          E2_TRUEORIGINVERTEX_Y,
-                          E2_TRUEORIGINVERTEX_Z, myVELO, myBeam);
-      TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement(
-                          E2_PX,E2_PY, E2_PZ,
-                          Kst_ENDVERTEX_X,
-                          Kst_ENDVERTEX_Y,
-                          Kst_ENDVERTEX_Z, myVELO, myBeam);
+      // FirstMeasurement
+      TVector3 E1_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z, E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_Z, myVELO, myBeamTRUE);
+      TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_PX,E1_PY, E1_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
+      TVector3 E2_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z, E2_TRUEORIGINVERTEX_X, E2_TRUEORIGINVERTEX_Y, E2_TRUEORIGINVERTEX_Z, myVELO, myBeam);
+      TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_PX,E2_PY, E2_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
 
       E1_TRUE_EXP_TRACK_FirstMeasurementZ = E1_TRUE_EXP_TRACK_FirstMeasurement.Z();
       E1_EXP_TRACK_FirstMeasurementZ = E1_EXP_TRACK_FirstMeasurement.Z();
@@ -359,6 +332,8 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
       E2_TRUE_EXP_TRACK_FirstMeasurementX = E2_TRUE_EXP_TRACK_FirstMeasurement.X();
       E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
 
+
+      // XY_FROM_BEAM
       // Rescale center (0,0) to (beamX,beamY)
       Double_t beamX = myBeam.GetX();
       Double_t beamY = myBeam.GetY();
@@ -372,6 +347,13 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
       TVector2 E2_XY(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY);
       TVector2 E2_XY_recentered = XYbeam + E2_XY;
       E2_XY_FROM_BEAM = E2_XY_recentered.Mod();
+
+
+      // Phi
+      TVector3 E1_P(E1_PX, E1_PY, E1_PZ);
+      E1_PHI = E1_P.Phi();
+      TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
+      E2_PHI = E2_P.Phi();
 
       newTree->Fill();
     }
@@ -451,6 +433,8 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t E2_EXP_TRACK_FirstMeasurementY = -1000;
   Double_t E1_EXP_TRACK_FirstMeasurementX = -1000;
   Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E1_PHI = -1000;
+  Double_t E2_PHI = -1000;
   Double_t E1_XY_FROM_BEAM = -1000;
   Double_t E2_XY_FROM_BEAM = -1000;
 
@@ -465,6 +449,9 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
 
   TBranch *b_E1_XY_FROM_BEAM = newTree->Branch("E1_XY_FROM_BEAM", &E1_XY_FROM_BEAM);
   TBranch *b_E2_XY_FROM_BEAM = newTree->Branch("E2_XY_FROM_BEAM", &E2_XY_FROM_BEAM);
+
+  TBranch *b_E1_PHI = newTree->Branch("E1_PHI", &E1_PHI);
+  TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
 
   //============================================================================
   // Fill and write tree
@@ -504,6 +491,7 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
     // Select events
     if ( B0_M_fake > B0_M_cut )
     {
+      // FirstMeasurement
       TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_PX, E1_PY, E1_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
       TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_PX, E2_PY, E2_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
 
@@ -516,6 +504,8 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
       E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
       E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
 
+
+      // XY_FROM_BEAM
       // Rescale center (0,0) to (beamX,beamY)
       Double_t beamX = myBeam.GetX();
       Double_t beamY = myBeam.GetY();
@@ -529,6 +519,12 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
       TVector2 E2_XY(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY);
       TVector2 E2_XY_recentered = XYbeam + E2_XY;
       E2_XY_FROM_BEAM = E2_XY_recentered.Mod();
+
+      // Phi
+      TVector3 E1_P(E1_PX, E1_PY, E1_PZ);
+      E1_PHI = E1_P.Phi();
+      TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
+      E2_PHI = E2_P.Phi();
 
       newTree->Fill();
     }
