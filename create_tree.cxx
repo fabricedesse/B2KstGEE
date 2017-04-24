@@ -70,6 +70,18 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
   return exp_FirstMeasurement ;
 }
 
+Double_t GetPhi(Double_t PX, Double_t PY)
+{
+  TVector2 PXY(PX, PY);
+
+  if ( PY >= 0 )
+  {
+    return acos( PX / PXY.Mag() );
+  }
+
+  else return TMath::Pi() + acos ( PX / PXY.Mag() );
+}
+
 //==============================================================================
 // Programm begins here
 //==============================================================================
