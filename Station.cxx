@@ -15,12 +15,12 @@ Station::Station()
 }
 
 // Full constructor
-Station::Station(int number, double z_position, bool isLeft,
-                 double min_r, double max_r)
+Station::Station(int number, double z_position, bool isLeft, bool isFront, double min_r, double max_r)
 {
   station_number = number;
   station_z = z_position;
   station_isLeft = isLeft;
+  station_isFront = isFront;
   min_radius = min_r;
   max_radius = max_r;
 }
@@ -43,6 +43,11 @@ double Station::GetZ()
 bool Station::IsLeft()
 {
   return station_isLeft;
+}
+
+bool Station::IsFront()
+{
+  return station_isFront;
 }
 
 // Setters

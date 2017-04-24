@@ -22,15 +22,48 @@ VELO::VELO()
   // Construct VELO
   double *my_VELO_right = VELO_right();
   double *my_VELO_left = VELO_left();
+
+  bool isFront = true;
+  bool isLeft = true;
+
+  // Left stations
   for (int i = 0; i < 42; i++)
   {
-    Station s_left(i, my_VELO_left[i], 1);
-    Station s_right(i, my_VELO_right[i], 0);
-    VELO_stations.push_back(s_left);
-    VELO_stations.push_back(s_right);
+    if ( i%2 == 0 )
+    {
+      Station s_front(i, my_VELO_left[i], isLeft, isFront);
+      VELO_stations.push_back(s_front);
+    }
+
+    else
+    {
+      Station s_back(i, my_VELO_left[i], isLeft, !isFront);
+      VELO_stations.push_back(s_back);
+    }
   }
 
+  // Right stations
+  for (int i = 0; i < 42; i++)
+    {
+      if ( i%2 == 0 )
+      {
+        Station s_front(i, my_VELO_right[i], !isLeft, isFront);
+        VELO_stations.push_back(s_front);
+      }
+
+      else
+      {
+        Station s_back(i, my_VELO_right[i], !isLeft, !isFront);
+        VELO_stations.push_back(s_back);
+      }
+
+    }
+
+    // Sort stations
+    std::sort(VELO_stations.begin(), VELO_stations.end(), )
+
   nb_stations = VELO_stations.size();
+
 }
 
 //==============================================================================
@@ -56,9 +89,6 @@ void VELO::PrintStations()
 
   for (int i=0; i<nb_stations; i++)
   {
-    std::cout << "Station #" << VELO_stations.at(i).GetNumber()
-              << " *** z = " << VELO_stations.at(i).GetZ()
-              << " *** IsLeft = " << VELO_stations.at(i).IsLeft()
-              << std::endl;
+    std::cout << "Station #" << VELO_stations.at(i).GetNumber() << " *** z = " << VELO_stations.at(i).GetZ() << " *** IsLeft = " << VELO_stations.at(i).IsLeft() << " *** IsFront = " << VELO_stations.at(i).IsFront() << std::endl;
   }
 }
