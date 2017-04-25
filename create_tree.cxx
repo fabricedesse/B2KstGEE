@@ -170,6 +170,7 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t E1_PHI = -1000;
   Double_t E2_TRUE_PHI = -1000;
   Double_t E2_PHI = -1000;
+  Bool_t G_CONV_IN_STATIONS = 0;
 
   // Set branch addresses
   T->SetBranchAddress("B0_BKGCAT", &B0_BKGCAT);
@@ -266,14 +267,11 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TBranch *b_E2_TRUE_PHI = newTree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
 
+  TBranch *b_G_CONV_IN_STATIONS = newTree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
+
   //============================================================================
   // Create LHCb VELO and LHC beam
   //============================================================================
-
-  // Create LHCb VELO
-  VELO myVELO;
-  cout << "LHCb VELO has been created" << endl;
-  myVELO.PrintStations();
 
   // Create LHC beam
   Beam myBeamTRUE;
@@ -299,6 +297,12 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
           "B0_BKGCAT == 0 || B0_BKGCAT == 50 || B0_BKGCAT == 10");
   TH1F *h_beamY = (TH1F*)gDirectory->Get("h_beamY");
   myBeam.SetY( h_beamY->GetMean() );
+
+  // Create LHCb VELO
+  VELO myVELO;
+  cout << "LHCb VELO has been created" << endl;
+  myVELO.PrintStations();
+
 
   //============================================================================
   // Fill and write tree
@@ -354,6 +358,10 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
       E1_PHI = E1_P.Phi();
       TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
       E2_PHI = E2_P.Phi();
+
+
+      // G converted in stations
+      G_CONV_IN_STATIONS = myVELO.IsInStations(E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_Z, myBeam);
 
       newTree->Fill();
     }

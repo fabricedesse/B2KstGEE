@@ -14,6 +14,7 @@
 #include "VELO_geometry.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class VELO {
 
@@ -35,6 +36,9 @@ int GetNbStations();
 
 // Printers
 void PrintStations();
+
+// Others
+bool IsInStations( double x, double y, double z, Beam myBeam );
 
 //==============================================================================
 // Private attributes

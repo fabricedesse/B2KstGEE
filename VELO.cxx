@@ -60,7 +60,7 @@ VELO::VELO()
     }
 
     // Sort stations
-    std::sort(VELO_stations.begin(), VELO_stations.end(), )
+    std::sort(VELO_stations.begin(), VELO_stations.end() );
 
   nb_stations = VELO_stations.size();
 
@@ -91,4 +91,29 @@ void VELO::PrintStations()
   {
     std::cout << "Station #" << VELO_stations.at(i).GetNumber() << " *** z = " << VELO_stations.at(i).GetZ() << " *** IsLeft = " << VELO_stations.at(i).IsLeft() << " *** IsFront = " << VELO_stations.at(i).IsFront() << std::endl;
   }
+}
+
+// Others
+
+bool VELO::IsInStations( double x, double y, double z, Beam myBeam)
+{
+  TVector2 XY(x, y);
+  if ( !isInAcceptance( XY, myBeam, 0) ) return false;
+  else
+  {
+    for (int i=0; i<nb_stations; i++)
+    {
+      Station front_station = VELO_stations.at(i);
+      if ( !front_station.IsFront() ) continue;
+      else if ( z < front_station.GetZ() ) break;
+      else
+      {
+        Station back_station = VELO_stations.at(i+1);
+        if ( front_station.GetZ() <= z && z <= back_station.GetZ() && ( ( x >= myBeam.GetX() && front_station.IsLeft() ) || ( x <= myBeam.GetX() && !front_station.IsLeft() ) ) ) return true;
+        else continue;
+      }
+    }
+    return false;
+  }
+
 }

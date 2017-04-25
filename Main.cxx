@@ -38,6 +38,5 @@ int main()
   // Make efficiency plots
   // plot_cut();
 
-
   cout << "Main is done." << endl;
 }

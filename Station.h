@@ -39,6 +39,23 @@ void SetNumber(int number);
 void SetZ(double z);
 void SetIsLeft(bool isLeft);
 
+// Operators
+
+bool operator<(const Station &s) const
+{
+  return this->station_z < s.station_z;
+}
+
+bool operator>(const Station &s) const
+{
+  return this->station_z > s.station_z;
+}
+
+bool operator==(const Station &s) const
+{
+  return this->station_z == s.station_z;
+}
+
 //==============================================================================
 // Private attributes
 //==============================================================================
