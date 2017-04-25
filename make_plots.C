@@ -45,6 +45,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   Double_t E2_TRACK_FirstMeasurementZ, E2_TRACK_FirstMeasurementY, E2_TRACK_FirstMeasurementX;
   Double_t E2_TRUEORIGINVERTEX_Z, E2_TRUEORIGINVERTEX_Y, E2_TRUEORIGINVERTEX_X;
   Double_t E2_TRUEP_X, E2_TRUEP_Y, E2_TRUEP_Z;
+  Bool_t G_CONV_IN_STATIONS;
 
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ",
                       &E1_EXP_TRACK_FirstMeasurementZ);
@@ -96,6 +97,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   T->SetBranchAddress("E2_TRUEP_X", &E2_TRUEP_X);
   T->SetBranchAddress("E2_TRUEP_Y", &E2_TRUEP_Y);
   T->SetBranchAddress("E2_TRUEP_Z", &E2_TRUEP_Z);
+  T->SetBranchAddress("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
 
   // Output file
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
@@ -142,6 +144,9 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
         100, -20, 20, 100, -20, 20);
 
   TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
+
+  TH2F *G_CONV_VELO = new TH2F("G_CONV_VELO", "Convertion in VELO stations: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
+  TH2F * G_CONV_RF = new TH2F("G_CONV_RF", "Convertion in RF shield: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -190,6 +195,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
         E1_false_hits->Fill(E1_TRUE_EXP_TRACK_FirstMeasurementX,
                             E1_TRUE_EXP_TRACK_FirstMeasurementY);
       }
+
+      // G convertion
+      if ( G_CONV_IN_STATIONS ) G_CONV_VELO->Fill( E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y );
+      else G_CONV_RF->Fill( E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y );
      }
 
      // For E2
@@ -367,6 +376,18 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.png");
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.pdf");
   //cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_false_hits.C");
+
+  G_CONV_VELO->GetXaxis()->SetTitle("E1_TRUEORIGINVERTEX_X");
+  G_CONV_VELO->GetYaxis()->SetTitle("E1_TRUEORIGINVERTEX_Y");
+  G_CONV_VELO->GetYaxis()->SetTitleOffset(1.6);
+  G_CONV_VELO->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_G_CONV_VELO.png");
+
+  G_CONV_RF->GetXaxis()->SetTitle("E1_TRUEORIGINVERTEX_X");
+  G_CONV_RF->GetYaxis()->SetTitle("E1_TRUEORIGINVERTEX_Y");
+  G_CONV_RF->GetYaxis()->SetTitleOffset(1.6);
+  G_CONV_RF->Draw();
+  cSquare->SaveAs("../plots/"+output_folder+"/"+output_folder+"_G_CONV_RF.png");
 
 
   newf->Close();

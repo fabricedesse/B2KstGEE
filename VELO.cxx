@@ -105,11 +105,11 @@ bool VELO::IsInStations( double x, double y, double z, Beam myBeam)
     {
       Station front_station = VELO_stations.at(i);
       if ( !front_station.IsFront() ) continue;
-      else if ( z < front_station.GetZ() ) break;
+      else if ( z < front_station.GetZ() - .3 ) break;
       else
       {
         Station back_station = VELO_stations.at(i+1);
-        if ( front_station.GetZ() <= z && z <= back_station.GetZ() && ( ( x >= myBeam.GetX() && front_station.IsLeft() ) || ( x <= myBeam.GetX() && !front_station.IsLeft() ) ) ) return true;
+        if ( front_station.GetZ() -.3 <= z && z <= back_station.GetZ() +.3 && ( ( x >= myBeam.GetX() && front_station.IsLeft() ) || ( x <= myBeam.GetX() && !front_station.IsLeft() ) ) ) return true;
         else continue;
       }
     }
