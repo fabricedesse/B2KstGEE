@@ -145,6 +145,11 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t E2_PY;
   Double_t E2_PZ;
 
+  // JPs
+  Double_t JPs_PX;
+  Double_t JPs_PY;
+  Double_t JPs_PZ;
+
   // E FirstMeasurementX
   Double_t E1_TRACK_FirstMeasurementX;
   Double_t E1_TRACK_FirstMeasurementY;
@@ -170,6 +175,7 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t E1_PHI = -1000;
   Double_t E2_TRUE_PHI = -1000;
   Double_t E2_PHI = -1000;
+  Double_t JPs_PHI = -1000;
   Bool_t G_CONV_IN_STATIONS = 0;
 
   // Set branch addresses
@@ -223,6 +229,10 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("E2_PY", &E2_PY);
   T->SetBranchAddress("E2_PZ", &E2_PZ);
 
+  T->SetBranchAddress("JPs_PX", &JPs_PX);
+  T->SetBranchAddress("JPs_PY", &JPs_PY);
+  T->SetBranchAddress("JPs_PZ", &JPs_PZ);
+
   T->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
   T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
@@ -266,6 +276,7 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TBranch *b_E1_PHI = newTree->Branch("E1_PHI", &E1_PHI);
   TBranch *b_E2_TRUE_PHI = newTree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
+  TBranch *b_JPs_PHI = newTree->Branch("JPs_PHI", &JPs_PHI);
 
   TBranch *b_G_CONV_IN_STATIONS = newTree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
 
@@ -358,6 +369,9 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
       E1_PHI = E1_P.Phi();
       TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
       E2_PHI = E2_P.Phi();
+      TVector3 JPs_P(JPs_PX, JPs_PY, JPs_PZ);
+      JPs_PHI = JPs_P.Phi();
+
 
 
       // G converted in stations
