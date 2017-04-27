@@ -32,6 +32,7 @@ VELO();
 
 // Getters
 Station GetStation( int station_number );
+Station GetStationZ( double station_Z );
 int GetNbStations();
 
 // Printers

@@ -26,9 +26,9 @@
 #include "TMath.h"
 
 
-TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
-  Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y,
-  Double_t mother_ENDVERTEX_Z, VELO myVELO, Beam myBeam);
+TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ, Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y, Double_t mother_ENDVERTEX_Z, VELO myVELO, Beam myBeam);
+
+bool ConvertsBeforeStation ( TVector3 JPs_FirstVELOhit, Double_t JPs_ENDVERTEX_Z, VELO myVELO );
 
 void create_tree_MC (TString input_file, TString input_tree, TString output_file);
 

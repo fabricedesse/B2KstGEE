@@ -24,6 +24,9 @@ namespace VELO_geo
   //static double beamX = 0.6;
   //static double beamY = 0.;
 
+  // Stations carracteristics
+  static double station_width = 0.3;
+
   //Triangle
   static double triangle_height = 2.5;
   static double triangle_baseY = 7.5;

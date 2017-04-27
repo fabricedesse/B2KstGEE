@@ -47,13 +47,13 @@ VELO::VELO()
     {
       if ( i%2 == 0 )
       {
-        Station s_front(i, my_VELO_right[i], !isLeft, isFront);
+        Station s_front( 100 + i, my_VELO_right[i], !isLeft, isFront);
         VELO_stations.push_back(s_front);
       }
 
       else
       {
-        Station s_back(i, my_VELO_right[i], !isLeft, !isFront);
+        Station s_back( 100 + i, my_VELO_right[i], !isLeft, !isFront);
         VELO_stations.push_back(s_back);
       }
 
@@ -76,6 +76,18 @@ Station VELO::GetStation( int station_number )
   return VELO_stations.at(station_number);
 }
 
+Station VELO::GetStationZ( double z )
+{
+  for ( std::vector<Station>::iterator it = VELO_stations.begin() ; it != VELO_stations.end() ; ++it )
+  {
+    Station my_station = *it;
+    if ( my_station.GetZ() == z ) return my_station;
+    else continue;
+  }
+  std::cout << "No station found for this Z, returned first station." << std::endl;
+  return VELO_stations.at(0);
+}
+
 int VELO::GetNbStations()
 {
   return nb_stations;
@@ -95,6 +107,7 @@ void VELO::PrintStations()
 
 // Others
 
+// Since we don't know where the value station_Z is, we take  for each station station_Z +/- station_width (depending wether it is front or back station). This overestimates the real width of the station. Nevertheless, it is harmless, since in the acceptance of the VELO, in the region before/after the station there is no material, thus no conversion from RF or anything else. Thus we are sure to include everything converting in the VELO stations.
 bool VELO::IsInStations( double x, double y, double z, Beam myBeam)
 {
   TVector2 XY(x, y);
@@ -105,11 +118,11 @@ bool VELO::IsInStations( double x, double y, double z, Beam myBeam)
     {
       Station front_station = VELO_stations.at(i);
       if ( !front_station.IsFront() ) continue;
-      else if ( z < front_station.GetZ() - .3 ) break;
+      else if ( z < front_station.GetZ() - station_width ) break;
       else
       {
         Station back_station = VELO_stations.at(i+1);
-        if ( front_station.GetZ() -.3 <= z && z <= back_station.GetZ() +.3 && ( ( x >= myBeam.GetX() && front_station.IsLeft() ) || ( x <= myBeam.GetX() && !front_station.IsLeft() ) ) ) return true;
+        if ( front_station.GetZ() - station_width <= z && z <= back_station.GetZ() + station_width && ( ( x >= myBeam.GetX() && front_station.IsLeft() ) || ( x <= myBeam.GetX() && !front_station.IsLeft() ) ) ) return true;
         else continue;
       }
     }

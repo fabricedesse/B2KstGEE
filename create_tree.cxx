@@ -70,6 +70,31 @@ TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
   return exp_FirstMeasurement ;
 }
 
+bool ConvertsBeforeStation ( TVector3 JPs_FirstVELOhit, Double_t JPs_ENDVERTEX_Z, VELO myVELO )
+{
+  // Case the JPs never encounters a station
+  if ( JPs_FirstVELOhit.Z() == -1000 ) return true;
+
+  else
+  {
+    // Get station corresponding to JPs_FirstVELOhit
+    Station hit_station = myVELO.GetStationZ( JPs_FirstVELOhit.Z() );
+
+    // Get end of this station
+    Double_t station_end = -1000;
+    if ( hit_station.IsFront() )
+    {
+      Station back_station = myVELO.GetStation( hit_station.GetNumber() + 1 );
+      station_end = back_station.GetZ() + VELO_geo::station_width;
+    }
+    else station_end = hit_station.GetZ() + VELO_geo::station_width;
+
+    // Check wether conversion happens before or after the hit station
+    if ( JPs_ENDVERTEX_Z < station_end ) return true;
+    else return false;
+  }
+}
+
 //==============================================================================
 // Programm begins here
 //==============================================================================
@@ -313,7 +338,6 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   VELO myVELO;
   cout << "LHCb VELO has been created" << endl;
   myVELO.PrintStations();
-
 
   //============================================================================
   // Fill and write tree
