@@ -31,8 +31,13 @@ VELO();
 //==============================================================================
 
 // Getters
-Station GetStation( int station_number );
-Station GetStationZ( double station_Z );
+
+// Get station at position i in the vector of stations VELO_stations
+Station GetStation( int i );
+
+// Get station with station_number == station_nb
+Station GetStationNb ( int station_nb );
+Station GetStationAtZ( double station_Z );
 int GetNbStations();
 
 // Printers

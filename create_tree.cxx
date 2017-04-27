@@ -78,13 +78,13 @@ bool ConvertsBeforeStation ( TVector3 JPs_FirstVELOhit, Double_t JPs_ENDVERTEX_Z
   else
   {
     // Get station corresponding to JPs_FirstVELOhit
-    Station hit_station = myVELO.GetStationZ( JPs_FirstVELOhit.Z() );
+    Station hit_station = myVELO.GetStationAtZ( JPs_FirstVELOhit.Z() );
 
     // Get end of this station
     Double_t station_end = -1000;
     if ( hit_station.IsFront() )
     {
-      Station back_station = myVELO.GetStation( hit_station.GetNumber() + 1 );
+      Station back_station = myVELO.GetStationNb( hit_station.GetNumber() + 1 );
       station_end = back_station.GetZ() + VELO_geo::station_width;
     }
     else station_end = hit_station.GetZ() + VELO_geo::station_width;
@@ -175,6 +175,14 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t JPs_PY;
   Double_t JPs_PZ;
 
+  Double_t JPs_TRUEP_X;
+  Double_t JPs_TRUEP_Y;
+  Double_t JPs_TRUEP_Z;
+
+  Double_t JPs_TRUEORIGINVERTEX_X;
+  Double_t JPs_TRUEORIGINVERTEX_Y;
+  Double_t JPs_TRUEORIGINVERTEX_Z;
+
   // E FirstMeasurementX
   Double_t E1_TRACK_FirstMeasurementX;
   Double_t E1_TRACK_FirstMeasurementY;
@@ -202,6 +210,7 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t E2_PHI = -1000;
   Double_t JPs_PHI = -1000;
   Bool_t G_CONV_IN_STATIONS = 0;
+  Bool_t G_CONV_BEFORE;
 
   // Set branch addresses
   T->SetBranchAddress("B0_BKGCAT", &B0_BKGCAT);
@@ -258,6 +267,14 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("JPs_PY", &JPs_PY);
   T->SetBranchAddress("JPs_PZ", &JPs_PZ);
 
+  T->SetBranchAddress("JPs_TRUEP_X", &JPs_TRUEP_X);
+  T->SetBranchAddress("JPs_TRUEP_Y", &JPs_TRUEP_Y);
+  T->SetBranchAddress("JPs_TRUEP_Z", &JPs_TRUEP_Z);
+
+  T->SetBranchAddress("JPs_TRUEORIGINVERTEX_X", &JPs_TRUEORIGINVERTEX_X);
+  T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Y", &JPs_TRUEORIGINVERTEX_Y);
+  T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z", &JPs_TRUEORIGINVERTEX_Z);
+
   T->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
   T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
@@ -304,6 +321,8 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TBranch *b_JPs_PHI = newTree->Branch("JPs_PHI", &JPs_PHI);
 
   TBranch *b_G_CONV_IN_STATIONS = newTree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
+
+  TBranch *b_G_CONV_BEFORE = newTree->Branch("G_CONV_BEFORE", &G_CONV_BEFORE);
 
   //============================================================================
   // Create LHCb VELO and LHC beam
@@ -370,6 +389,12 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
       E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
       E2_TRUE_EXP_TRACK_FirstMeasurementX = E2_TRUE_EXP_TRACK_FirstMeasurement.X();
       E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
+
+
+      // Converts before station
+      TVector3 JPs_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( JPs_TRUEP_X, JPs_TRUEP_Y, JPs_TRUEP_Z, JPs_TRUEORIGINVERTEX_X, JPs_TRUEORIGINVERTEX_Y, JPs_TRUEORIGINVERTEX_Z, myVELO, myBeam );
+
+      G_CONV_BEFORE = ConvertsBeforeStation( JPs_TRUE_EXP_TRACK_FirstMeasurement, E1_TRUEORIGINVERTEX_Z, myVELO );
 
 
       // XY_FROM_BEAM

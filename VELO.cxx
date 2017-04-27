@@ -71,12 +71,27 @@ VELO::VELO()
 //==============================================================================
 
 // Getters
-Station VELO::GetStation( int station_number )
+
+// Get station at position i in the vector of stations VELO_stations
+Station VELO::GetStation( int i )
 {
-  return VELO_stations.at(station_number);
+return VELO_stations.at( i );
 }
 
-Station VELO::GetStationZ( double z )
+Station VELO::GetStationNb( int station_nb )
+{
+  for ( std::vector<Station>::iterator it = VELO_stations.begin() ; it != VELO_stations.end() ; ++it )
+  {
+    Station my_station = *it;
+    if ( my_station.GetNumber() == station_nb ) return my_station;
+    else continue;
+  }
+  std::cout << "No station found for this station number, returned first station." << std::endl;
+  return VELO_stations.at(0);
+}
+
+
+Station VELO::GetStationAtZ( double z )
 {
   for ( std::vector<Station>::iterator it = VELO_stations.begin() ; it != VELO_stations.end() ; ++it )
   {
