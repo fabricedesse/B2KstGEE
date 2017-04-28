@@ -183,6 +183,13 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t JPs_TRUEORIGINVERTEX_Y;
   Double_t JPs_TRUEORIGINVERTEX_Z;
 
+  // K
+  Double_t K_PT;
+  Double_t K_P;
+  Double_t K_PX;
+  Double_t K_PY;
+  Double_t K_PZ;
+
   // E FirstMeasurementX
   Double_t E1_TRACK_FirstMeasurementX;
   Double_t E1_TRACK_FirstMeasurementY;
@@ -209,6 +216,8 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   Double_t E2_TRUE_PHI = -1000;
   Double_t E2_PHI = -1000;
   Double_t JPs_PHI = -1000;
+  Double_t K_PHI = -1000;
+  Double_t K_THETA_K = -1000;
   Bool_t G_CONV_IN_STATIONS = 0;
   Bool_t G_CONV_BEFORE;
 
@@ -275,6 +284,12 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Y", &JPs_TRUEORIGINVERTEX_Y);
   T->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z", &JPs_TRUEORIGINVERTEX_Z);
 
+  T->SetBranchAddress("K_P", &K_P);
+  T->SetBranchAddress("K_PT", &K_PT);
+  T->SetBranchAddress("K_PX", &K_PX);
+  T->SetBranchAddress("K_PY", &K_PY);
+  T->SetBranchAddress("K_PZ", &K_PZ);
+
   T->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
   T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
@@ -319,6 +334,9 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
   TBranch *b_E2_TRUE_PHI = newTree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
   TBranch *b_JPs_PHI = newTree->Branch("JPs_PHI", &JPs_PHI);
+  TBranch *b_K_PHI = newTree->Branch("K_PHI", &K_PHI);
+
+  TBranch *b_K_THETA_K = newTree->Branch("K_THETA_K", &K_THETA_K);
 
   TBranch *b_G_CONV_IN_STATIONS = newTree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
 
@@ -414,14 +432,18 @@ void create_tree_MC (TString input_file, TString input_tree, TString output_file
 
 
       // Phi
-      TVector3 E1_P(E1_PX, E1_PY, E1_PZ);
-      E1_PHI = E1_P.Phi();
-      TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
-      E2_PHI = E2_P.Phi();
-      TVector3 JPs_P(JPs_PX, JPs_PY, JPs_PZ);
-      JPs_PHI = JPs_P.Phi();
+      TVector3 E1_3P(E1_PX, E1_PY, E1_PZ);
+      E1_PHI = E1_3P.Phi();
+      TVector3 E2_3P(E2_PX, E2_PY, E2_PZ);
+      E2_PHI = E2_3P.Phi();
+      TVector3 JPs_3P(JPs_PX, JPs_PY, JPs_PZ);
+      JPs_PHI = JPs_3P.Phi();
+      TVector3 K_3P(K_PX, K_PY, K_PZ);
+      K_PHI = K_3P.Phi();
 
 
+      // theta_k
+      K_THETA_K = sin( K_PT / K_P );
 
       // G converted in stations
       G_CONV_IN_STATIONS = myVELO.IsInStations(E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_Z, myBeam);
@@ -454,6 +476,7 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t E2_PE, E2_PX, E2_PY, E2_PZ;
   Double_t K_PE, K_PX, K_PY, K_PZ;
   Double_t Pi_PE, Pi_PX, Pi_PY, Pi_PZ;
+  Double_t JPs_PE, JPs_PX, JPs_PY, JPs_PZ;
 
   Double_t Kst_ENDVERTEX_X;
   Double_t Kst_ENDVERTEX_Y;
@@ -463,6 +486,9 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t E1_TRACK_FirstMeasurementY;
   Double_t E2_TRACK_FirstMeasurementX;
   Double_t E2_TRACK_FirstMeasurementY;
+
+  Double_t K_PT;
+  Double_t K_P;
 
   Double_t JPs_TRUE_M = 3096.900;
   Double_t B0_M_cut = 5175.;
@@ -481,11 +507,18 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   T->SetBranchAddress("K_PX", &K_PX);
   T->SetBranchAddress("K_PY", &K_PY);
   T->SetBranchAddress("K_PZ", &K_PZ);
+  T->SetBranchAddress("K_P", &K_P);
+  T->SetBranchAddress("K_PT", &K_PT);
 
   T->SetBranchAddress("Pi_PE", &Pi_PE);
   T->SetBranchAddress("Pi_PX", &Pi_PX);
   T->SetBranchAddress("Pi_PY", &Pi_PY);
   T->SetBranchAddress("Pi_PZ", &Pi_PZ);
+
+  T->SetBranchAddress("JPs_PE", &JPs_PE);
+  T->SetBranchAddress("JPs_PX", &JPs_PX);
+  T->SetBranchAddress("JPs_PY", &JPs_PY);
+  T->SetBranchAddress("JPs_PZ", &JPs_PZ);
 
   T->SetBranchAddress("Kst_ENDVERTEX_X", &Kst_ENDVERTEX_X);
   T->SetBranchAddress("Kst_ENDVERTEX_Y", &Kst_ENDVERTEX_Y);
@@ -506,8 +539,11 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
   Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
   Double_t E1_PHI = -1000;
   Double_t E2_PHI = -1000;
+  Double_t JPs_PHI = -1000;
   Double_t E1_XY_FROM_BEAM = -1000;
   Double_t E2_XY_FROM_BEAM = -1000;
+  Double_t K_PHI = -1000;
+  Double_t K_THETA_K = -1000;
 
   TBranch *b_E1_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E1_EXP_TRACK_FirstMeasurementZ", &E1_EXP_TRACK_FirstMeasurementZ);
   TBranch *b_E2_EXP_TRACK_FirstMeasurementZ = newTree->Branch("E2_EXP_TRACK_FirstMeasurementZ", &E2_EXP_TRACK_FirstMeasurementZ);
@@ -523,6 +559,9 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
 
   TBranch *b_E1_PHI = newTree->Branch("E1_PHI", &E1_PHI);
   TBranch *b_E2_PHI = newTree->Branch("E2_PHI", &E2_PHI);
+  TBranch *b_JPs_PHI = newTree->Branch("JPs_PHI", &JPs_PHI);
+  TBranch *b_K_PHI = newTree->Branch("K_PHI", &K_PHI);
+  TBranch *b_K_THETA_K = newTree->Branch("K_THETA_K", &K_THETA_K);
 
   //============================================================================
   // Fill and write tree
@@ -592,10 +631,18 @@ void create_tree_JPs(TString input_file, TString input_tree, TString output_file
       E2_XY_FROM_BEAM = E2_XY_recentered.Mod();
 
       // Phi
-      TVector3 E1_P(E1_PX, E1_PY, E1_PZ);
-      E1_PHI = E1_P.Phi();
-      TVector3 E2_P(E2_PX, E2_PY, E2_PZ);
-      E2_PHI = E2_P.Phi();
+      TVector3 E1_3P(E1_PX, E1_PY, E1_PZ);
+      E1_PHI = E1_3P.Phi();
+      TVector3 E2_3P(E2_PX, E2_PY, E2_PZ);
+      E2_PHI = E2_3P.Phi();
+      TVector3 JPs_3P(JPs_PX, JPs_PY, JPs_PZ);
+      JPs_PHI = JPs_3P.Phi();
+      TVector3 K_3P(K_PX, K_PY, K_PZ);
+      K_PHI = K_3P.Phi();
+
+
+      // theta_k
+      K_THETA_K = sin( K_PT / K_P );
 
       newTree->Fill();
     }
