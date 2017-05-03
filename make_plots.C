@@ -47,6 +47,9 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   Double_t E2_TRUEP_X, E2_TRUEP_Y, E2_TRUEP_Z;
   Bool_t G_CONV_IN_STATIONS;
 
+  Double_t K_PHI;
+  Double_t K_THETA_K;
+
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ",
                       &E1_EXP_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRUE_EXP_TRACK_FirstMeasurementZ",
@@ -97,7 +100,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   T->SetBranchAddress("E2_TRUEP_X", &E2_TRUEP_X);
   T->SetBranchAddress("E2_TRUEP_Y", &E2_TRUEP_Y);
   T->SetBranchAddress("E2_TRUEP_Z", &E2_TRUEP_Z);
+
   T->SetBranchAddress("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
+  T->SetBranchAddress("K_PHI", &K_PHI);
+  T->SetBranchAddress("K_THETA_K", &K_THETA_K);
 
   // Output file
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
@@ -147,6 +153,12 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   TH2F *G_CONV_VELO = new TH2F("G_CONV_VELO", "Convertion in VELO stations: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
   TH2F * G_CONV_RF = new TH2F("G_CONV_RF", "Convertion in RF shield: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
+
+  TH1F *K_PHI_VeryLow = new TH1F("K_PHI_VeryLow", "K_PHI {K_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *K_PHI_Low = new TH1F("K_PHI_Low", "K_PHI {0.03 < K_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *K_PHI_High = new TH1F("K_PHI_High", "K_PHI {0.1 < K_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *K_PHI_VeryHigh = new TH1F("K_PHI_VeryHigh", "K_PHI {K_THETAK > 0.3}", 100, -3.5, 3.5);
+
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -250,6 +262,13 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
       {
         E1_E2_avg->Fill( ( E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ + E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ )/2. );
       }
+
+
+      // theta_k
+      if ( K_THETA_K < 0.03 ) K_PHI_VeryLow->Fill(K_PHI);
+      else if ( K_THETA_K < 0.1 ) K_PHI_Low->Fill(K_PHI);
+      else if ( K_THETA_K < 0.3 ) K_PHI_High->Fill(K_PHI);
+      else K_PHI_VeryHigh->Fill(K_PHI);
     }
 
   newf->Write("",TObject::kOverwrite);
@@ -326,6 +345,30 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_avg.png");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
   //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
+
+  K_PHI_VeryLow->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryLow->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_VeryLow.png");
+
+  K_PHI_Low->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_Low->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_Low.png");
+
+  K_PHI_High->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_High->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_High.png");
+
+  K_PHI_VeryHigh->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryHigh->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_VeryHigh.png");
 
 
   TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
