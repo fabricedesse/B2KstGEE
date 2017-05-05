@@ -9,9 +9,9 @@ using namespace std;
 
 void MakePreselection()
 {
-  Int_t K_L0Calo_HCAL_region, Pi_L0Calo_HCAL_region, E1_L0Calo_ECAL_region, E2_L0Calo_ECAL_region;
-  Bool_t K_hasRich, Pi_hasRich, E1_hasRich, E2_hasRich, E1_hasCalo, E2_hasCalo;
-  Double_t K_PT, Pi_PT, E1_PT, E2_PT, K_TRACK_CHI2NDOF, Pi_TRACK_CHI2NDOF, E1_TRACK_CHI2NDOF, E2_TRACK_CHI2NDOF, K_TRACK_GhostProb, Pi_TRACK_GhostProb, E1_TRACK_GhostProb, E2_TRACK_GhostProb, E1_L0Calo_ECAL_xProjection, E1_L0Calo_ECAL_yProjection, E2_L0Calo_ECAL_xProjection, E2_L0Calo_ECAL_yProjection, Kst_M, B0_M23_Subst3_pi2K, B0_M012, B0_M013_Subst3_pi2K, cosThetaL, B0_HOP_M, B0_FDCHI2_OWNPV, JPs_M, B0_PV_M;
+  Int_t K_L0Calo_HCAL_region, Pi_L0Calo_HCAL_region, E1_L0Calo_ECAL_region, E2_L0Calo_ECAL_region, B0_BKGCAT;
+  Bool_t K_hasRich, Pi_hasRich, E1_hasRich, E2_hasRich, E1_hasCalo, E2_hasCalo, B0_Hlt1TrackAllL0Decision_TOS, B0_Hlt2Topo2BodyBBDTDecision_TOS, B0_Hlt2Topo3BodyBBDTDecision_TOS, B0_Hlt2Topo4BodyBBDTDecision_TOS, B0_Hlt2TopoE2BodyBBDTDecision_TOS, B0_Hlt2TopoE3BodyBBDTDecision_TOS, B0_Hlt2TopoE4BodyBBDTDecision_TOS;
+  Double_t K_PT, Pi_PT, E1_PT, E2_PT, K_TRACK_CHI2NDOF, Pi_TRACK_CHI2NDOF, E1_TRACK_CHI2NDOF, E2_TRACK_CHI2NDOF, K_TRACK_GhostProb, Pi_TRACK_GhostProb, E1_TRACK_GhostProb, E2_TRACK_GhostProb, E1_L0Calo_ECAL_xProjection, E1_L0Calo_ECAL_yProjection, E2_L0Calo_ECAL_xProjection, E2_L0Calo_ECAL_yProjection, Kst_M, B0_M23_Subst3_pi2K, B0_M012, B0_M013_Subst3_pi2K, cosThetaL, B0_HOP_M, B0_FDCHI2_OWNPV, JPs_M, B0_PV_M, wNB;
 
   TFile *f = new TFile("../data/Raw/MC_Raw.root","read");
   TFile newFile("../data/CreateTuple/MC_EE_candidates.root","RECREATE");
@@ -24,6 +24,14 @@ void MakePreselection()
   oldTree->SetBranchAddress("Pi_L0Calo_HCAL_region", &Pi_L0Calo_HCAL_region);
   oldTree->SetBranchAddress("E1_L0Calo_ECAL_region", &E1_L0Calo_ECAL_region);
   oldTree->SetBranchAddress("E2_L0Calo_ECAL_region", &E2_L0Calo_ECAL_region);
+  oldTree->SetBranchAddress("B0_Hlt1TrackAllL0Decision_TOS", &B0_Hlt1TrackAllL0Decision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2Topo2BodyBBDTDecision_TOS", &B0_Hlt2Topo2BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2Topo3BodyBBDTDecision_TOS", &B0_Hlt2Topo3BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2Topo4BodyBBDTDecision_TOS", &B0_Hlt2Topo4BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2TopoE2BodyBBDTDecision_TOS", &B0_Hlt2TopoE2BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2TopoE3BodyBBDTDecision_TOS", &B0_Hlt2TopoE3BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_Hlt2TopoE4BodyBBDTDecision_TOS", &B0_Hlt2TopoE4BodyBBDTDecision_TOS);
+  oldTree->SetBranchAddress("B0_BKGCAT", &B0_BKGCAT);
   oldTree->SetBranchAddress("K_hasRich", &K_hasRich);
   oldTree->SetBranchAddress("Pi_hasRich", &Pi_hasRich);
   oldTree->SetBranchAddress("E1_hasRich", &E1_hasRich);
@@ -55,6 +63,7 @@ void MakePreselection()
   oldTree->SetBranchAddress("B0_FDCHI2_OWNPV", &B0_FDCHI2_OWNPV);
   oldTree->SetBranchAddress("JPs_M", &JPs_M);
   oldTree->SetBranchAddress("B0_PV_M", &B0_PV_M);
+  oldTree->SetBranchAddress("wNB", &wNB);
 
   int nentries = (int)oldTree->GetEntries();
 
@@ -62,6 +71,8 @@ void MakePreselection()
   {
     oldTree->GetEntry(i);
 
+    Bool_t IsBKGCAT = B0_BKGCAT == 0 || B0_BKGCAT == 10 || B0_BKGCAT == 50 || B0_BKGCAT == 60;
+    Bool_t IsHlt = B0_Hlt1TrackAllL0Decision_TOS && ((B0_Hlt2Topo2BodyBBDTDecision_TOS || B0_Hlt2Topo3BodyBBDTDecision_TOS || B0_Hlt2Topo4BodyBBDTDecision_TOS)||(B0_Hlt2TopoE2BodyBBDTDecision_TOS || B0_Hlt2TopoE3BodyBBDTDecision_TOS || B0_Hlt2TopoE4BodyBBDTDecision_TOS));
     Bool_t IsCaloRegion = TMath::Min(K_L0Calo_HCAL_region, Pi_L0Calo_HCAL_region) >= 0 && TMath::Min(E1_L0Calo_ECAL_region, E2_L0Calo_ECAL_region) >= 0;
     Bool_t IsCaloRich = K_hasRich && Pi_hasRich && E1_hasRich && E2_hasRich && E1_hasCalo && E2_hasCalo;
     Bool_t IsPt = K_PT > 250 && Pi_PT > 250 && TMath::Min(E1_PT, E2_PT) > 500;
@@ -73,8 +84,9 @@ void MakePreselection()
     Bool_t IsHOP = B0_HOP_M > 3350 + 135 * TMath::Log(B0_FDCHI2_OWNPV);
     Bool_t IsJPs_M = TMath::Power(JPs_M/1000.,2) < TMath::Power(4./1000.,2);
     Bool_t IsB0_PV_M = B0_PV_M > 4500. && B0_PV_M < 6200.;
+    Bool_t IswNB = wNB > 0.49;
 
-    if( IsCaloRegion && IsCaloRich && IsPt && IsTrack && IsNotGhost && IsCaloProj && IsJPs_M && IsMass && IsCosThetaL && IsHOP && IsB0_PV_M )
+    if( IsBKGCAT && IsHlt && IsCaloRegion && IsCaloRich && IsPt && IsTrack && IsNotGhost && IsCaloProj && IsJPs_M && IsMass && IsCosThetaL && IsHOP && IsB0_PV_M && IswNB )
     {
       newTree->Fill();
     }

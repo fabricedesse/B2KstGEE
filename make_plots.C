@@ -48,7 +48,16 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   Bool_t G_CONV_IN_STATIONS;
 
   Double_t K_PHI;
+  Double_t E1_PHI;
+  Double_t E2_PHI;
+  Double_t JPs_PHI;
+  Double_t E1_First_PHI;
+  Double_t E2_First_PHI;
+
   Double_t K_THETA_K;
+  Double_t E1_THETA_K;
+  Double_t E2_THETA_K;
+  Double_t JPs_THETA_K;
 
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ",
                       &E1_EXP_TRACK_FirstMeasurementZ);
@@ -103,12 +112,23 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   T->SetBranchAddress("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
   T->SetBranchAddress("K_PHI", &K_PHI);
+  T->SetBranchAddress("E1_PHI", &E1_PHI);
+  T->SetBranchAddress("E2_PHI", &E2_PHI);
+  T->SetBranchAddress("JPs_PHI", &JPs_PHI);
+  T->SetBranchAddress("E1_First_PHI", &E1_First_PHI);
+  T->SetBranchAddress("E2_First_PHI", &E2_First_PHI);
+
   T->SetBranchAddress("K_THETA_K", &K_THETA_K);
+  T->SetBranchAddress("E1_THETA_K", &E1_THETA_K);
+  T->SetBranchAddress("E2_THETA_K", &E2_THETA_K);
+  T->SetBranchAddress("JPs_THETA_K", &JPs_THETA_K);
+
 
   // Output file
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
 
   //Declare histograms
+  // E1
   TH1F *E1_TRUEZvsZ = new TH1F("TRUEZvsZ",
        "FirstZ_recoTRUE - FirstZ",
        50, -70, 70);
@@ -129,6 +149,7 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *E1_false_hits = new TH2F("E1_false_hits", "E1 false hits",
         100, -20, 20, 100, -20, 20);
 
+  // E2
   TH1F *E2_TRUEZvsZ = new TH1F("TRUEZvsZ",
        "FirstZ_recoTRUE - FirstZ",
        50, -70, 70);
@@ -151,14 +172,33 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
 
   TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
 
+  // Conversion
   TH2F *G_CONV_VELO = new TH2F("G_CONV_VELO", "Convertion in VELO stations: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
   TH2F * G_CONV_RF = new TH2F("G_CONV_RF", "Convertion in RF shield: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
 
+  // Phi
   TH1F *K_PHI_VeryLow = new TH1F("K_PHI_VeryLow", "K_PHI {K_THETA_K < 0.03}", 100, -3.5, 3.5);
   TH1F *K_PHI_Low = new TH1F("K_PHI_Low", "K_PHI {0.03 < K_THETA_K < 0.1}", 100, -3.5, 3.5);
   TH1F *K_PHI_High = new TH1F("K_PHI_High", "K_PHI {0.1 < K_THETA_K < 0.3}", 100, -3.5, 3.5);
   TH1F *K_PHI_VeryHigh = new TH1F("K_PHI_VeryHigh", "K_PHI {K_THETAK > 0.3}", 100, -3.5, 3.5);
 
+  TH1F *E1_PHI_VeryLow = new TH1F("E1_PHI_VeryLow", "E1_PHI {E1_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_Low = new TH1F("E1_PHI_Low", "E1_PHI {0.03 < E1_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_High = new TH1F("E1_PHI_High", "E1_PHI {0.1 < E1_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_VeryHigh = new TH1F("E1_PHI_VeryHigh", "E1_PHI {E1_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F *E2_PHI_VeryLow = new TH1F("E2_PHI_VeryLow", "E2_PHI {E2_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_Low = new TH1F("E2_PHI_Low", "E2_PHI {0.03 < E2_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_High = new TH1F("E2_PHI_High", "E2_PHI {0.1 < E2_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_VeryHigh = new TH1F("E2_PHI_VeryHigh", "E2_PHI {E2_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F *JPs_PHI_VeryLow = new TH1F("JPs_PHI_VeryLow", "JPs_PHI {JPs_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_Low = new TH1F("JPs_PHI_Low", "JPs_PHI {0.03 < JPs_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_High = new TH1F("JPs_PHI_High", "JPs_PHI {0.1 < JPs_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_VeryHigh = new TH1F("JPs_PHI_VeryHigh", "JPs_PHI {JPs_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F * E1_First_PHI_h = new TH1F("E1_FirstPHI_h", "E1_PHI of first measurement", 100, -3.5, 3.5);
+  TH1F * E2_First_PHI_h = new TH1F("E2_FirstPHI_h", "E2_PHI of first measurement", 100, -3.5, 3.5);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -264,11 +304,29 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
       }
 
 
-      // theta_k
+      // Phi
       if ( K_THETA_K < 0.03 ) K_PHI_VeryLow->Fill(K_PHI);
       else if ( K_THETA_K < 0.1 ) K_PHI_Low->Fill(K_PHI);
       else if ( K_THETA_K < 0.3 ) K_PHI_High->Fill(K_PHI);
       else K_PHI_VeryHigh->Fill(K_PHI);
+
+      if ( E1_THETA_K < 0.03 ) E1_PHI_VeryLow->Fill(E1_PHI);
+      else if ( E1_THETA_K < 0.1 ) E1_PHI_Low->Fill(E1_PHI);
+      else if ( E1_THETA_K < 0.3 ) E1_PHI_High->Fill(E1_PHI);
+      else E1_PHI_VeryHigh->Fill(E1_PHI);
+
+      if ( E2_THETA_K < 0.03 ) E2_PHI_VeryLow->Fill(E2_PHI);
+      else if ( E2_THETA_K < 0.1 ) E2_PHI_Low->Fill(E2_PHI);
+      else if ( E2_THETA_K < 0.3 ) E2_PHI_High->Fill(E2_PHI);
+      else E2_PHI_VeryHigh->Fill(E2_PHI);
+
+      if ( JPs_THETA_K < 0.03 ) JPs_PHI_VeryLow->Fill(JPs_PHI);
+      else if ( JPs_THETA_K < 0.1 ) JPs_PHI_Low->Fill(JPs_PHI);
+      else if ( JPs_THETA_K < 0.3 ) JPs_PHI_High->Fill(JPs_PHI);
+      else JPs_PHI_VeryHigh->Fill(JPs_PHI);
+
+      E1_First_PHI_h->Fill( E1_First_PHI );
+      E2_First_PHI_h->Fill( E2_First_PHI );
     }
 
   newf->Write("",TObject::kOverwrite);
@@ -278,73 +336,54 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   E1_TRUEZvsZ->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEZvsZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
 
   E1_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
   E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
   E1_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
   E1_KstEEZ_vs_KstGEEZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstEEreco_KstGEE.C");
 
   E1_TRUEFD_Z_short->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E1_TRUEFD_Z_short->GetYaxis()->SetTitle("Nb of events");
   E1_TRUEFD_Z_short->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEFD_Z_short->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_short.C");
 
   E1_TRUEFD_Z_long->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E1_TRUEFD_Z_long->GetYaxis()->SetTitle("Nb of events");
   E1_TRUEFD_Z_long->GetYaxis()->SetTitleOffset(1.6);
   E1_TRUEFD_Z_long->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_TRUEFD_Z_long.C");
-
 
   E2_TRUEZvsZ->GetXaxis()->SetTitle("FirstZ_KstGEE_recoTRUE - FirstZ");
   E2_TRUEZvsZ->GetYaxis()->SetTitle("Nb of events");
   E2_TRUEZvsZ->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEZvsZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstGEEreco_KstGEE.C");
 
   E2_KstEEZ_vs_KstGEEZ->GetXaxis()->SetTitle("FirstZ_KstEE_reco - FirstZ");
   E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitle("Nb of events");
   E2_KstEEZ_vs_KstGEEZ->GetYaxis()->SetTitleOffset(1.6);
   E2_KstEEZ_vs_KstGEEZ->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_KstEEreco_KstGEE.C");
 
   E2_TRUEFD_Z_short->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E2_TRUEFD_Z_short->GetYaxis()->SetTitle("Nb of events");
   E2_TRUEFD_Z_short->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEFD_Z_short->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_short.C");
 
   E2_TRUEFD_Z_long->GetXaxis()->SetTitle("JPs_TRUEFD_Z");
   E2_TRUEFD_Z_long->GetYaxis()->SetTitle("Nb of events");
   E2_TRUEFD_Z_long->GetYaxis()->SetTitleOffset(1.6);
   E2_TRUEFD_Z_long->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E2_TRUEFD_Z_long.C");
 
   E1_E2_avg->GetXaxis()->SetTitle("FirstZ_reco - FirstZ");
   E1_E2_avg->GetYaxis()->SetTitle("Nb of events");
   E1_E2_avg->GetYaxis()->SetTitleOffset(1.6);
   E1_E2_avg->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_avg.png");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.pdf");
-  //c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_KstGEEreco_KstGEE.C");
 
   K_PHI_VeryLow->GetXaxis()->SetTitle("K_PHI");
   K_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
@@ -370,6 +409,123 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   K_PHI_VeryHigh->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_VeryHigh.png");
 
+
+  // Phi
+
+  E1_First_PHI_h->GetXaxis()->SetTitle("E1_First_PHI");
+  E1_First_PHI_h->GetYaxis()->SetTitle("Nb of events");
+  E1_First_PHI_h->GetYaxis()->SetTitleOffset(1.6);
+  E1_First_PHI_h->Draw();
+  c->SaveAs("../plots/Phi/"+output_folder+"_E1_First_PHI_h.png");
+
+  E2_First_PHI_h->GetXaxis()->SetTitle("E2_First_PHI");
+  E2_First_PHI_h->GetYaxis()->SetTitle("Nb of events");
+  E2_First_PHI_h->GetYaxis()->SetTitleOffset(1.6);
+  E2_First_PHI_h->Draw();
+  c->SaveAs("../plots/Phi/"+output_folder+"_E2_First_PHI_h.png");
+
+  TCanvas *cMultiple = new TCanvas("cMultiple","Phi",100,100,1400,1000);
+  cMultiple->Divide(4,4);
+
+  cMultiple->cd(1);
+  K_PHI_VeryLow->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryLow->Draw();
+
+  cMultiple->cd(2);
+  K_PHI_Low->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_Low->Draw();
+
+  cMultiple->cd(3);
+  K_PHI_High->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_High->Draw();
+
+  cMultiple->cd(4);
+  K_PHI_VeryHigh->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(5);
+  JPs_PHI_VeryLow->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_VeryLow->Draw();
+
+  cMultiple->cd(6);
+  JPs_PHI_Low->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_Low->Draw();
+
+  cMultiple->cd(7);
+  JPs_PHI_High->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_High->Draw();
+
+  cMultiple->cd(8);
+  JPs_PHI_VeryHigh->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(9);
+  E1_PHI_VeryLow->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_VeryLow->Draw();
+
+  cMultiple->cd(10);
+  E1_PHI_Low->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_Low->Draw();
+
+  cMultiple->cd(11);
+  E1_PHI_High->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_High->Draw();
+
+  cMultiple->cd(12);
+  E1_PHI_VeryHigh->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(13);
+  E2_PHI_VeryLow->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_VeryLow->Draw();
+
+  cMultiple->cd(14);
+  E2_PHI_Low->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_Low->Draw();
+
+  cMultiple->cd(15);
+  E2_PHI_High->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_High->Draw();
+
+  cMultiple->cd(16);
+  E2_PHI_VeryHigh->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_VeryHigh->Draw();
+
+  cMultiple->SaveAs("../plots/Phi/"+output_folder+"_PHI.png");
+
+  // Square
 
   TCanvas *cSquare = new TCanvas("cSquare","Plots",100,100,1000,1000);
   E1_convertion_pt->GetXaxis()->SetTitle("E1_TRUEORIGINVERTEX_X");
@@ -456,6 +612,18 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   Double_t E2_EXP_TRACK_FirstMeasurementZ;
   Double_t E2_TRACK_FirstMeasurementZ, E2_TRACK_FirstMeasurementY, E2_TRACK_FirstMeasurementX;
 
+  Double_t K_PHI;
+  Double_t E1_PHI;
+  Double_t E2_PHI;
+  Double_t JPs_PHI;
+  Double_t E1_First_PHI;
+  Double_t E2_First_PHI;
+
+  Double_t K_THETA_K;
+  Double_t E1_THETA_K;
+  Double_t E2_THETA_K;
+  Double_t JPs_THETA_K;
+
   T->SetBranchAddress("E1_EXP_TRACK_FirstMeasurementZ", &E1_EXP_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementZ", &E1_TRACK_FirstMeasurementZ);
   T->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
@@ -467,6 +635,18 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   T->SetBranchAddress("E2_TRACK_FirstMeasurementY", &E2_TRACK_FirstMeasurementY);
   T->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
 
+  T->SetBranchAddress("K_PHI", &K_PHI);
+  T->SetBranchAddress("E1_PHI", &E1_PHI);
+  T->SetBranchAddress("E2_PHI", &E2_PHI);
+  T->SetBranchAddress("JPs_PHI", &JPs_PHI);
+  T->SetBranchAddress("E1_First_PHI", &E1_First_PHI);
+  T->SetBranchAddress("E2_First_PHI", &E2_First_PHI);
+
+  T->SetBranchAddress("K_THETA_K", &K_THETA_K);
+  T->SetBranchAddress("E1_THETA_K", &E1_THETA_K);
+  T->SetBranchAddress("E2_THETA_K", &E2_THETA_K);
+  T->SetBranchAddress("JPs_THETA_K", &JPs_THETA_K);
+
   // Output file
   TFile *newf = new TFile("../plots/"+output_folder+".root","RECREATE");
 
@@ -475,7 +655,31 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
 
   TH1F *E2_KstEEZ_vs_KstGEEZ = new TH1F("E2_KstEEZ_vs_KstGEEZ", "FirstZ_reco - FirstZ", 100, -500, 100);
 
-    TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
+  TH1F *E1_E2_avg = new TH1F("E1_E2_combi", "E1_E2_avg(FirstZ_reco - FirstZ)", 100, -500, 100);
+
+  // Phi
+  TH1F *K_PHI_VeryLow = new TH1F("K_PHI_VeryLow", "K_PHI {K_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *K_PHI_Low = new TH1F("K_PHI_Low", "K_PHI {0.03 < K_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *K_PHI_High = new TH1F("K_PHI_High", "K_PHI {0.1 < K_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *K_PHI_VeryHigh = new TH1F("K_PHI_VeryHigh", "K_PHI {K_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F *E1_PHI_VeryLow = new TH1F("E1_PHI_VeryLow", "E1_PHI {E1_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_Low = new TH1F("E1_PHI_Low", "E1_PHI {0.03 < E1_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_High = new TH1F("E1_PHI_High", "E1_PHI {0.1 < E1_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *E1_PHI_VeryHigh = new TH1F("E1_PHI_VeryHigh", "E1_PHI {E1_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F *E2_PHI_VeryLow = new TH1F("E2_PHI_VeryLow", "E2_PHI {E2_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_Low = new TH1F("E2_PHI_Low", "E2_PHI {0.03 < E2_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_High = new TH1F("E2_PHI_High", "E2_PHI {0.1 < E2_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *E2_PHI_VeryHigh = new TH1F("E2_PHI_VeryHigh", "E2_PHI {E2_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F *JPs_PHI_VeryLow = new TH1F("JPs_PHI_VeryLow", "JPs_PHI {JPs_THETA_K < 0.03}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_Low = new TH1F("JPs_PHI_Low", "JPs_PHI {0.03 < JPs_THETA_K < 0.1}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_High = new TH1F("JPs_PHI_High", "JPs_PHI {0.1 < JPs_THETA_K < 0.3}", 100, -3.5, 3.5);
+  TH1F *JPs_PHI_VeryHigh = new TH1F("JPs_PHI_VeryHigh", "JPs_PHI {JPs_THETAK > 0.3}", 100, -3.5, 3.5);
+
+  TH1F * E1_First_PHI_h = new TH1F("E1_FirstPHI_h", "E1_PHI of first measurement", 100, -3.5, 3.5);
+  TH1F * E2_First_PHI_h = new TH1F("E2_FirstPHI_h", "E2_PHI of first measurement", 100, -3.5, 3.5);
 
   TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
 
@@ -500,6 +704,30 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
     {
       E1_E2_avg->Fill( ( E1_EXP_TRACK_FirstMeasurementZ - E1_TRACK_FirstMeasurementZ + E2_EXP_TRACK_FirstMeasurementZ - E2_TRACK_FirstMeasurementZ )/2. );
     }
+
+    // Phi
+    if ( K_THETA_K < 0.03 ) K_PHI_VeryLow->Fill(K_PHI);
+    else if ( K_THETA_K < 0.1 ) K_PHI_Low->Fill(K_PHI);
+    else if ( K_THETA_K < 0.3 ) K_PHI_High->Fill(K_PHI);
+    else K_PHI_VeryHigh->Fill(K_PHI);
+
+    if ( E1_THETA_K < 0.03 ) E1_PHI_VeryLow->Fill(E1_PHI);
+    else if ( E1_THETA_K < 0.1 ) E1_PHI_Low->Fill(E1_PHI);
+    else if ( E1_THETA_K < 0.3 ) E1_PHI_High->Fill(E1_PHI);
+    else E1_PHI_VeryHigh->Fill(E1_PHI);
+
+    if ( E2_THETA_K < 0.03 ) E2_PHI_VeryLow->Fill(E2_PHI);
+    else if ( E2_THETA_K < 0.1 ) E2_PHI_Low->Fill(E2_PHI);
+    else if ( E2_THETA_K < 0.3 ) E2_PHI_High->Fill(E2_PHI);
+    else E2_PHI_VeryHigh->Fill(E2_PHI);
+
+    if ( JPs_THETA_K < 0.03 ) JPs_PHI_VeryLow->Fill(JPs_PHI);
+    else if ( JPs_THETA_K < 0.1 ) JPs_PHI_Low->Fill(JPs_PHI);
+    else if ( JPs_THETA_K < 0.3 ) JPs_PHI_High->Fill(JPs_PHI);
+    else JPs_PHI_VeryHigh->Fill(JPs_PHI);
+
+    E1_First_PHI_h->Fill( E1_First_PHI );
+    E2_First_PHI_h->Fill( E2_First_PHI );
   }
 
   newf->Write("",TObject::kOverwrite);
@@ -525,4 +753,119 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   E1_E2_avg->GetYaxis()->SetTitleOffset(1.6);
   E1_E2_avg->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_avg.png");
+
+  // Phi
+
+  E1_First_PHI_h->GetXaxis()->SetTitle("E1_First_PHI");
+  E1_First_PHI_h->GetYaxis()->SetTitle("Nb of events");
+  E1_First_PHI_h->GetYaxis()->SetTitleOffset(1.6);
+  E1_First_PHI_h->Draw();
+  c->SaveAs("../plots/Phi/"+output_folder+"_E1_First_PHI_h.png");
+
+  E2_First_PHI_h->GetXaxis()->SetTitle("E2_First_PHI");
+  E2_First_PHI_h->GetYaxis()->SetTitle("Nb of events");
+  E2_First_PHI_h->GetYaxis()->SetTitleOffset(1.6);
+  E2_First_PHI_h->Draw();
+  c->SaveAs("../plots/Phi/"+output_folder+"_E2_First_PHI_h.png");
+
+  TCanvas *cMultiple = new TCanvas("cMultiple","Phi",100,100,1400,1000);
+  cMultiple->Divide(4,4);
+
+  cMultiple->cd(1);
+  K_PHI_VeryLow->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryLow->Draw();
+
+  cMultiple->cd(2);
+  K_PHI_Low->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_Low->Draw();
+
+  cMultiple->cd(3);
+  K_PHI_High->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_High->Draw();
+
+  cMultiple->cd(4);
+  K_PHI_VeryHigh->GetXaxis()->SetTitle("K_PHI");
+  K_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  K_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  K_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(5);
+  JPs_PHI_VeryLow->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_VeryLow->Draw();
+
+  cMultiple->cd(6);
+  JPs_PHI_Low->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_Low->Draw();
+
+  cMultiple->cd(7);
+  JPs_PHI_High->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_High->Draw();
+
+  cMultiple->cd(8);
+  JPs_PHI_VeryHigh->GetXaxis()->SetTitle("JPs_PHI");
+  JPs_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  JPs_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  JPs_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(9);
+  E1_PHI_VeryLow->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_VeryLow->Draw();
+
+  cMultiple->cd(10);
+  E1_PHI_Low->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_Low->Draw();
+
+  cMultiple->cd(11);
+  E1_PHI_High->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_High->Draw();
+
+  cMultiple->cd(12);
+  E1_PHI_VeryHigh->GetXaxis()->SetTitle("E1_PHI");
+  E1_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  E1_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  E1_PHI_VeryHigh->Draw();
+
+  cMultiple->cd(13);
+  E2_PHI_VeryLow->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_VeryLow->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_VeryLow->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_VeryLow->Draw();
+
+  cMultiple->cd(14);
+  E2_PHI_Low->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_Low->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_Low->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_Low->Draw();
+
+  cMultiple->cd(15);
+  E2_PHI_High->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_High->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_High->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_High->Draw();
+
+  cMultiple->cd(16);
+  E2_PHI_VeryHigh->GetXaxis()->SetTitle("E2_PHI");
+  E2_PHI_VeryHigh->GetYaxis()->SetTitle("Nb of events");
+  E2_PHI_VeryHigh->GetYaxis()->SetTitleOffset(1.6);
+  E2_PHI_VeryHigh->Draw();
+
+  cMultiple->SaveAs("../plots/Phi/"+output_folder+"_PHI.png");
 }
