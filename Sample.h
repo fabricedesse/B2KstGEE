@@ -1,46 +1,61 @@
 //==============================================================================
 // Author: Fabrice Desse
 //
-// Date: 2016-04-13
+// Date: 2016-04-05
 //
-// Class : Beam
+// Class : Sample
 //
 //==============================================================================
 
-#ifndef Beam_h
-#define Beam_h
+#ifndef SAMPLE_H
+#define SAMPLE_H
 
-class Beam
+#include <string>
+#include "TTree.h"
+#include "TFile.h"
+#include "TString.h"
+
+using namespace std;
+
+class Sample
 {
   public:
+
+  enum class DecayType {KstEE, KstGEE, KstJPsEE};
+
   //============================================================================
-  // Constructur & Destructor
+  // Constructor
   //============================================================================
 
-  // Default constructor
-  Beam();
+  // Generic constructor
+  Sample();
 
   // Full constructor
-  Beam(double X, double Y);
+  Sample(TString fileName, TString treeName, bool isMC, Sample::DecayType type);
 
   //============================================================================
   // Public member functions
   //============================================================================
 
   // Getters
-  double GetX();
-  double GetY();
-
-  // Setters
-  void SetX(double X);
-  void SetY(double Y);
+  TString GetFileName();
+  TString GetTreeName();
+  bool IsMC();
+  Sample::DecayType GetType();
+  TFile* GetFile();
+  TTree* GetTree();
 
   //============================================================================
   // Private attributes
   //============================================================================
   private:
-  double beamX;
-  double beamY;
+
+  TString sample_fileName;
+  TString sample_treeName;
+  bool sample_isMC;
+  Sample::DecayType sample_type;
+  TTree* sample_tree;
+  TFile* sample_file;
 };
 
 #endif
