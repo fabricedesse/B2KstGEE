@@ -14,6 +14,7 @@
 #include "TTree.h"
 #include "TFile.h"
 #include "TString.h"
+#include "Q2Bin.h"
 
 using namespace std;
 
@@ -44,6 +45,10 @@ class Sample
   Sample::DecayType GetType();
   TFile* GetFile();
   TTree* GetTree();
+
+  // Tree initializer
+
+  void Preselection( &Q2Bin myQ2Bin );
 
   //============================================================================
   // Private attributes
