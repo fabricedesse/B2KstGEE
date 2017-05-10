@@ -11,10 +11,12 @@
 #define SAMPLE_H
 
 #include <string>
+#include<iostream>
 #include "TTree.h"
 #include "TFile.h"
 #include "TString.h"
 #include "Q2Bin.h"
+#include "TMath.h"
 
 using namespace std;
 
@@ -22,7 +24,7 @@ class Sample
 {
   public:
 
-  enum class DecayType {KstEE, KstGEE, KstJPsEE};
+  enum class DecayType {LPT, MC_KstEE, MC_KstGEE, MC_KstJPsEE};
 
   //============================================================================
   // Constructor
@@ -48,7 +50,7 @@ class Sample
 
   // Tree initializer
 
-  void Preselection( &Q2Bin myQ2Bin );
+  void MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCat = "" );
 
   //============================================================================
   // Private attributes

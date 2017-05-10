@@ -43,7 +43,7 @@ double Q2Bin::GetQ2Min()
 
 double Q2Bin::GetQ2Max()
 {
-  return q2Bin_q2Min;
+  return q2Bin_q2Max;
 }
 
 double Q2Bin::GetHOP()
