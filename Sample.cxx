@@ -20,13 +20,14 @@ Sample::Sample()
 }
 
 // Full constructor
-Sample::Sample(TString fileName, TString treeName, Sample::DecayType type)
+Sample::Sample(TString fileName, TString treeName, Sample::DecayType type, Sample::TriggerCat triggerCat)
 {
   sample_fileName = fileName;
   sample_treeName = treeName;
   sample_file = new TFile(fileName, "read");
   sample_tree = (TTree*) sample_file->Get(treeName);
   sample_type = type;
+  sample_triggerCat = triggerCat;
 
   switch(sample_type)
   {
@@ -91,6 +92,8 @@ TTree* Sample::GetTree()
 {
   return sample_tree;
 }
+
+//******************************************************************************
 
 // Create tuples
 
@@ -235,7 +238,6 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
   //============================================================================
   // Fill tree and write into file
 
-  // ADD FIRSTZ AND CONVERTS AND PHI ETC
   int nentries = (int)sample_tree->GetEntries();
 
   for(int i=0; i<nentries; i++)
@@ -293,6 +295,7 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
     // JPs specific
     if ( sample_isJPs )
     {
+      isCosThetaL = true;
       isHOP = true;
       isB0_PV_M = true;
       isB0_PV_JPs_M = ( B0_PV_JPs_M > myQ2Bin->GetB0_PV_M_min() ) && ( B0_PV_JPs_M < myQ2Bin->GetB0_PV_M_max() );
@@ -305,10 +308,474 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
     }
   }
 
-  //
-
   newFile->Write("",TObject::kOverwrite);
-  std::cout << "Tree " << newTreeName << " with number of entries = "
-  << newTree->GetEntries() << " written in file " << newFile << endl << endl ;
-  // newFile->Close();
+  std::cout << "Tree " << newTreeName << " with number of entries = " << newTree->GetEntries() << " written in file " << newFile << std::endl << std::endl ;
+}
+
+//******************************************************************************
+
+TVector3 get_exp_firstMeasurement(Double_t PX, Double_t PY, Double_t PZ,
+  Double_t mother_ENDVERTEX_X, Double_t mother_ENDVERTEX_Y,
+  Double_t mother_ENDVERTEX_Z, VELO myVELO, Beam myBeam)
+{
+  TVector3 exp_FirstMeasurement(-1000,-1000,-1000);
+
+  for ( Int_t i = 0; i < myVELO.GetNbStations(); i++ )
+  {
+    Station myStation = myVELO.GetStation(i);
+    Double_t z_VELO = myStation.GetZ();
+
+    // Extrapolate x and y for all VELO positions upstream of the mother
+    // z position
+    if ( ( z_VELO - mother_ENDVERTEX_Z ) >= 0 )
+    {
+      if (PZ != 0)
+      {
+        exp_FirstMeasurement.SetX( mother_ENDVERTEX_X
+          + ( PX/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ) ;
+        exp_FirstMeasurement.SetY( mother_ENDVERTEX_Y
+          + ( PY/PZ ) * ( z_VELO - mother_ENDVERTEX_Z ) ) ;
+      }
+      else break;
+
+      TVector2 XY(exp_FirstMeasurement.X(), exp_FirstMeasurement.Y());
+
+      // Check if x is on the left/right and if it corresponds to the
+      // isLeft/isRight of the tested VELO station
+      if ((exp_FirstMeasurement.X() > myBeam.GetX() && myStation.IsLeft() ) ||
+          (exp_FirstMeasurement.X() < myBeam.GetX() && !(myStation.IsLeft())))
+      {
+       // If (x,y) is in the VELO acceptance this is the expected first
+       // measurement in z
+       if ( isInAcceptance(XY, myBeam, false) )
+       {
+         exp_FirstMeasurement.SetZ(z_VELO);
+         break;
+       }
+       else continue;
+      }
+      else continue;
+    }
+  }
+  return exp_FirstMeasurement ;
+}
+
+//******************************************************************************
+
+bool ConvertsBeforeStation ( TVector3 JPs_FirstVELOhit, Double_t JPs_ENDVERTEX_Z, VELO myVELO )
+{
+  // Case the JPs never encounters a station
+  if ( JPs_FirstVELOhit.Z() == -1000 ) return true;
+
+  else
+  {
+    // Get station corresponding to JPs_FirstVELOhit
+    Station hit_station = myVELO.GetStationAtZ( JPs_FirstVELOhit.Z() );
+
+    // Get end of this station
+    Double_t station_end = -1000;
+    if ( hit_station.IsFront() )
+    {
+      Station back_station = myVELO.GetStationNb( hit_station.GetNumber() + 1 );
+      station_end = back_station.GetZ() + VELO_geo::station_width;
+    }
+    else station_end = hit_station.GetZ() + VELO_geo::station_width;
+
+    // Check wether conversion happens before or after the hit station
+    if ( JPs_ENDVERTEX_Z < station_end ) return true;
+    else return false;
+  }
+}
+
+//******************************************************************************
+
+
+void Sample::AddConversionBranches()
+{
+  sample_file->ReOpen("update");
+
+  //============================================================================
+  // Init new tree
+  //============================================================================
+
+  // B0
+  Double_t B0_TRUEORIGINVERTEX_X;
+  Double_t B0_TRUEORIGINVERTEX_Y;
+  Double_t B0_TRUEORIGINVERTEX_Z;
+
+  Double_t B0_OWNPV_X;
+  Double_t B0_OWNPV_Y;
+  Double_t B0_OWNPV_Z;
+
+  // Kst vertex
+  Double_t Kst_TRUEORIGINVERTEX_X;
+  Double_t Kst_TRUEORIGINVERTEX_Y;
+  Double_t Kst_TRUEORIGINVERTEX_Z;
+
+  Double_t Kst_TRUEENDVERTEX_X;
+  Double_t Kst_TRUEENDVERTEX_Y;
+  Double_t Kst_TRUEENDVERTEX_Z;
+
+  Double_t Kst_ENDVERTEX_X;
+  Double_t Kst_ENDVERTEX_Y;
+  Double_t Kst_ENDVERTEX_Z;
+
+  Double_t B0_ENDVERTEX_X;
+  Double_t B0_ENDVERTEX_Y;
+  Double_t B0_ENDVERTEX_Z;
+
+  // E vertex
+  Double_t E1_TRUEORIGINVERTEX_X;
+  Double_t E1_TRUEORIGINVERTEX_Y;
+  Double_t E1_TRUEORIGINVERTEX_Z;
+
+  Double_t E2_TRUEORIGINVERTEX_X;
+  Double_t E2_TRUEORIGINVERTEX_Y;
+  Double_t E2_TRUEORIGINVERTEX_Z;
+
+  // E momentum
+  Double_t E1_TRUEP_X;
+  Double_t E1_TRUEP_Y;
+  Double_t E1_TRUEP_Z;
+
+  Double_t E1_PX;
+  Double_t E1_PY;
+  Double_t E1_PZ;
+  Double_t E1_P;
+  Double_t E1_PT;
+
+  Double_t E2_TRUEP_X;
+  Double_t E2_TRUEP_Y;
+  Double_t E2_TRUEP_Z;
+  Double_t E2_P;
+  Double_t E2_PT;
+
+  Double_t E2_PX;
+  Double_t E2_PY;
+  Double_t E2_PZ;
+
+  // JPs
+  Double_t JPs_PX;
+  Double_t JPs_PY;
+  Double_t JPs_PZ;
+  Double_t JPs_P;
+  Double_t JPs_PT;
+
+  Double_t JPs_TRUEP_X;
+  Double_t JPs_TRUEP_Y;
+  Double_t JPs_TRUEP_Z;
+
+  Double_t JPs_TRUEORIGINVERTEX_X;
+  Double_t JPs_TRUEORIGINVERTEX_Y;
+  Double_t JPs_TRUEORIGINVERTEX_Z;
+
+  // K
+  Double_t K_PT;
+  Double_t K_P;
+  Double_t K_PX;
+  Double_t K_PY;
+  Double_t K_PZ;
+
+  // E FirstMeasurementX
+  Double_t E1_TRACK_FirstMeasurementX;
+  Double_t E1_TRACK_FirstMeasurementY;
+  Double_t E2_TRACK_FirstMeasurementX;
+  Double_t E2_TRACK_FirstMeasurementY;
+
+  // New variables
+  Double_t E1_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementZ = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementY = -1000;
+  Double_t E1_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E1_TRUE_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E2_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E2_TRUE_EXP_TRACK_FirstMeasurementX = -1000;
+  Double_t E1_XY_FROM_BEAM = -1000;
+  Double_t E2_XY_FROM_BEAM = -1000;
+  Double_t E1_TRUE_PHI = -1000;
+  Double_t E1_PHI = -1000;
+  Double_t E2_TRUE_PHI = -1000;
+  Double_t E2_PHI = -1000;
+  Double_t JPs_PHI = -1000;
+  Double_t K_PHI = -1000;
+  Double_t K_THETA_K = -1000;
+  Bool_t G_CONV_IN_STATIONS;
+  Bool_t G_CONV_BEFORE;
+  Double_t E1_First_PHI = -1000;
+  Double_t E2_First_PHI = -1000;
+  Double_t E1_THETA_K = -1000;
+  Double_t E2_THETA_K = -1000;
+  Double_t JPs_THETA_K = -1000;
+
+  // Set branch addresses
+
+  // MC specific
+  if ( sample_isMC )
+  {
+    sample_tree->SetBranchAddress("B0_TRUEORIGINVERTEX_X", &B0_TRUEORIGINVERTEX_X);
+    sample_tree->SetBranchAddress("B0_TRUEORIGINVERTEX_Y", &B0_TRUEORIGINVERTEX_Y);
+    sample_tree->SetBranchAddress("B0_TRUEORIGINVERTEX_Z", &B0_TRUEORIGINVERTEX_Z);
+
+    sample_tree->SetBranchAddress("Kst_TRUEORIGINVERTEX_X", &Kst_TRUEORIGINVERTEX_X);
+    sample_tree->SetBranchAddress("Kst_TRUEORIGINVERTEX_Y", &Kst_TRUEORIGINVERTEX_Y);
+    sample_tree->SetBranchAddress("Kst_TRUEORIGINVERTEX_Z", &Kst_TRUEORIGINVERTEX_Z);
+
+    sample_tree->SetBranchAddress("Kst_TRUEENDVERTEX_X", &Kst_TRUEENDVERTEX_X);
+    sample_tree->SetBranchAddress("Kst_TRUEENDVERTEX_Y", &Kst_TRUEENDVERTEX_Y);
+    sample_tree->SetBranchAddress("Kst_TRUEENDVERTEX_Z", &Kst_TRUEENDVERTEX_Z);
+
+    sample_tree->SetBranchAddress("E1_TRUEORIGINVERTEX_X", &E1_TRUEORIGINVERTEX_X);
+    sample_tree->SetBranchAddress("E1_TRUEORIGINVERTEX_Y", &E1_TRUEORIGINVERTEX_Y);
+    sample_tree->SetBranchAddress("E1_TRUEORIGINVERTEX_Z", &E1_TRUEORIGINVERTEX_Z);
+
+    sample_tree->SetBranchAddress("E2_TRUEORIGINVERTEX_X", &E2_TRUEORIGINVERTEX_X);
+    sample_tree->SetBranchAddress("E2_TRUEORIGINVERTEX_Y", &E2_TRUEORIGINVERTEX_Y);
+    sample_tree->SetBranchAddress("E2_TRUEORIGINVERTEX_Z", &E2_TRUEORIGINVERTEX_Z);
+
+    sample_tree->SetBranchAddress("E1_TRUEP_X", &E1_TRUEP_X);
+    sample_tree->SetBranchAddress("E1_TRUEP_Y", &E1_TRUEP_Y);
+    sample_tree->SetBranchAddress("E1_TRUEP_Z", &E1_TRUEP_Z);
+
+    sample_tree->SetBranchAddress("E2_TRUEP_X", &E2_TRUEP_X);
+    sample_tree->SetBranchAddress("E2_TRUEP_Y", &E2_TRUEP_Y);
+    sample_tree->SetBranchAddress("E2_TRUEP_Z", &E2_TRUEP_Z);
+
+    sample_tree->SetBranchAddress("JPs_TRUEP_X", &JPs_TRUEP_X);
+    sample_tree->SetBranchAddress("JPs_TRUEP_Y", &JPs_TRUEP_Y);
+    sample_tree->SetBranchAddress("JPs_TRUEP_Z", &JPs_TRUEP_Z);
+
+    sample_tree->SetBranchAddress("JPs_TRUEORIGINVERTEX_X", &JPs_TRUEORIGINVERTEX_X);
+    sample_tree->SetBranchAddress("JPs_TRUEORIGINVERTEX_Y", &JPs_TRUEORIGINVERTEX_Y);
+    sample_tree->SetBranchAddress("JPs_TRUEORIGINVERTEX_Z", &JPs_TRUEORIGINVERTEX_Z);
+  }
+
+  sample_tree->SetBranchAddress("B0_OWNPV_X", &B0_OWNPV_X);
+  sample_tree->SetBranchAddress("B0_OWNPV_Y", &B0_OWNPV_Y);
+  sample_tree->SetBranchAddress("B0_OWNPV_Z", &B0_OWNPV_Z);
+
+  sample_tree->SetBranchAddress("Kst_ENDVERTEX_X", &Kst_ENDVERTEX_X);
+  sample_tree->SetBranchAddress("Kst_ENDVERTEX_Y", &Kst_ENDVERTEX_Y);
+  sample_tree->SetBranchAddress("Kst_ENDVERTEX_Z", &Kst_ENDVERTEX_Z);
+
+  sample_tree->SetBranchAddress("B0_ENDVERTEX_X" ,&B0_ENDVERTEX_X);
+  sample_tree->SetBranchAddress("B0_ENDVERTEX_Y" ,&B0_ENDVERTEX_Y);
+  sample_tree->SetBranchAddress("B0_ENDVERTEX_Z" ,&B0_ENDVERTEX_Z);
+
+  sample_tree->SetBranchAddress("E1_PX", &E1_PX);
+  sample_tree->SetBranchAddress("E1_PY", &E1_PY);
+  sample_tree->SetBranchAddress("E1_PZ", &E1_PZ);
+  sample_tree->SetBranchAddress("E1_P", &E1_P);
+  sample_tree->SetBranchAddress("E1_PT", &E1_PT);
+
+  sample_tree->SetBranchAddress("E2_P", &E2_P);
+  sample_tree->SetBranchAddress("E2_PT", &E2_PT);
+
+  sample_tree->SetBranchAddress("E2_PX", &E2_PX);
+  sample_tree->SetBranchAddress("E2_PY", &E2_PY);
+  sample_tree->SetBranchAddress("E2_PZ", &E2_PZ);
+
+  sample_tree->SetBranchAddress("JPs_PX", &JPs_PX);
+  sample_tree->SetBranchAddress("JPs_PY", &JPs_PY);
+  sample_tree->SetBranchAddress("JPs_PZ", &JPs_PZ);
+  sample_tree->SetBranchAddress("JPs_P", &JPs_P);
+  sample_tree->SetBranchAddress("JPs_PT", &JPs_PT);
+
+  sample_tree->SetBranchAddress("K_P", &K_P);
+  sample_tree->SetBranchAddress("K_PT", &K_PT);
+  sample_tree->SetBranchAddress("K_PX", &K_PX);
+  sample_tree->SetBranchAddress("K_PY", &K_PY);
+  sample_tree->SetBranchAddress("K_PZ", &K_PZ);
+
+  sample_tree->SetBranchAddress("E1_TRACK_FirstMeasurementX", &E1_TRACK_FirstMeasurementX);
+  sample_tree->SetBranchAddress("E1_TRACK_FirstMeasurementY", &E1_TRACK_FirstMeasurementY);
+  sample_tree->SetBranchAddress("E2_TRACK_FirstMeasurementX", &E2_TRACK_FirstMeasurementX);
+  sample_tree->SetBranchAddress("E2_TRACK_FirstMeasurementY", &E2_TRACK_FirstMeasurementY);
+
+  // MC specific
+  if ( sample_isMC )
+  {
+    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementZ =
+      sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementZ",
+      &E1_TRUE_EXP_TRACK_FirstMeasurementZ);
+    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementZ =
+      sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementZ",
+      &E2_TRUE_EXP_TRACK_FirstMeasurementZ);
+
+    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementY =
+      sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementY",
+      &E1_TRUE_EXP_TRACK_FirstMeasurementY);
+    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementY =
+      sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementY",
+      &E2_TRUE_EXP_TRACK_FirstMeasurementY);
+
+    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementX", &E1_TRUE_EXP_TRACK_FirstMeasurementX);
+    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementX", &E2_TRUE_EXP_TRACK_FirstMeasurementX);
+
+    TBranch *b_E1_TRUE_PHI = sample_tree->Branch("E1_TRUE_PHI", &E1_TRUE_PHI);
+    TBranch *b_E2_TRUE_PHI = sample_tree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
+
+    TBranch *b_G_CONV_IN_STATIONS = sample_tree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
+
+    TBranch *b_G_CONV_BEFORE = sample_tree->Branch("G_CONV_BEFORE", &G_CONV_BEFORE);
+  }
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementZ =
+    sample_tree->Branch("E1_EXP_TRACK_FirstMeasurementZ",
+    &E1_EXP_TRACK_FirstMeasurementZ);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementZ =
+    sample_tree->Branch("E2_EXP_TRACK_FirstMeasurementZ",
+    &E2_EXP_TRACK_FirstMeasurementZ);
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementY =
+    sample_tree->Branch("E1_EXP_TRACK_FirstMeasurementY",
+    &E1_EXP_TRACK_FirstMeasurementY);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementY =
+    sample_tree->Branch("E2_EXP_TRACK_FirstMeasurementY",
+    &E2_EXP_TRACK_FirstMeasurementY);
+
+  TBranch *b_E1_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E1_EXP_TRACK_FirstMeasurementX", &E1_EXP_TRACK_FirstMeasurementX);
+  TBranch *b_E2_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E2_EXP_TRACK_FirstMeasurementX", &E2_EXP_TRACK_FirstMeasurementX);
+
+  TBranch *b_E1_XY_FROM_BEAM = sample_tree->Branch("E1_XY_FROM_BEAM", &E1_XY_FROM_BEAM);
+  TBranch *b_E2_XY_FROM_BEAM = sample_tree->Branch("E2_XY_FROM_BEAM", &E2_XY_FROM_BEAM);
+
+  TBranch *b_E1_PHI = sample_tree->Branch("E1_PHI", &E1_PHI);
+  TBranch *b_E2_PHI = sample_tree->Branch("E2_PHI", &E2_PHI);
+  TBranch *b_JPs_PHI = sample_tree->Branch("JPs_PHI", &JPs_PHI);
+  TBranch *b_K_PHI = sample_tree->Branch("K_PHI", &K_PHI);
+
+  TBranch *b_K_THETA_K = sample_tree->Branch("K_THETA_K", &K_THETA_K);
+  TBranch *b_E1_THETA_K = sample_tree->Branch("E1_THETA_K", &E1_THETA_K);
+  TBranch *b_E2_THETA_K = sample_tree->Branch("E2_THETA_K", &E2_THETA_K);
+  TBranch *b_JPs_THETA_K = sample_tree->Branch("JPs_THETA_K", &JPs_THETA_K);
+
+  TBranch *b_E1_First_PHI = sample_tree->Branch("E1_First_PHI", &E1_First_PHI);
+  TBranch *b_E2_First_PHI = sample_tree->Branch("E2_First_PHI", &E2_First_PHI);
+
+  //============================================================================
+  // Create LHCb VELO and LHC beam
+  //============================================================================
+
+  // Create LHC beam
+
+  // MC scpecific
+  Beam myBeamTRUE;
+
+  if ( sample_isMC )
+  {
+    sample_tree->Draw("B0_TRUEORIGINVERTEX_X>>hTRUE_beamX");
+    TH1F *hTRUE_beamX = (TH1F*)gDirectory->Get("hTRUE_beamX");
+    myBeamTRUE.SetX( hTRUE_beamX->GetMean() );
+
+    sample_tree->Draw("B0_TRUEORIGINVERTEX_Y>>hTRUE_beamY");
+    TH1F *hTRUE_beamY = (TH1F*)gDirectory->Get("hTRUE_beamY");
+    myBeamTRUE.SetY( hTRUE_beamY->GetMean() );
+  }
+
+  Beam myBeam;
+
+  sample_tree->Draw("B0_OWNPV_X>>h_beamX");
+  TH1F *h_beamX = (TH1F*)gDirectory->Get("h_beamX");
+  myBeam.SetX( h_beamX->GetMean() );
+
+  sample_tree->Draw("B0_OWNPV_Y>>h_beamY");
+  TH1F *h_beamY = (TH1F*)gDirectory->Get("h_beamY");
+  myBeam.SetY( h_beamY->GetMean() );
+
+  cout << "LHC beam has been created" << endl;
+
+  // Create LHCb VELO
+  VELO myVELO;
+  cout << "LHCb VELO has been created" << endl;
+  //myVELO.PrintStations();
+
+  //============================================================================
+  // Fill and write tree
+  //============================================================================
+  int nentries = (int)sample_tree->GetEntries();
+
+  for(int i=0; i<nentries; i++)
+  {
+    sample_tree->GetEntry(i);
+
+    // MC specific
+    if ( sample_isMC )
+    {
+      // FirstMeasurement
+      TVector3 E1_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_TRUEP_X,E1_TRUEP_Y, E1_TRUEP_Z, E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_Z, myVELO, myBeamTRUE);
+      TVector3 E2_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_TRUEP_X,E2_TRUEP_Y, E2_TRUEP_Z, E2_TRUEORIGINVERTEX_X, E2_TRUEORIGINVERTEX_Y, E2_TRUEORIGINVERTEX_Z, myVELO, myBeam);
+
+      E1_TRUE_EXP_TRACK_FirstMeasurementZ = E1_TRUE_EXP_TRACK_FirstMeasurement.Z();
+      E2_TRUE_EXP_TRACK_FirstMeasurementZ = E2_TRUE_EXP_TRACK_FirstMeasurement.Z();
+      E1_TRUE_EXP_TRACK_FirstMeasurementY = E1_TRUE_EXP_TRACK_FirstMeasurement.Y();
+      E2_TRUE_EXP_TRACK_FirstMeasurementY = E2_TRUE_EXP_TRACK_FirstMeasurement.Y();
+      E1_TRUE_EXP_TRACK_FirstMeasurementX = E1_TRUE_EXP_TRACK_FirstMeasurement.X();
+      E2_TRUE_EXP_TRACK_FirstMeasurementX = E2_TRUE_EXP_TRACK_FirstMeasurement.X();
+
+      // Converts before station
+      TVector3 JPs_TRUE_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( JPs_TRUEP_X, JPs_TRUEP_Y, JPs_TRUEP_Z, JPs_TRUEORIGINVERTEX_X, JPs_TRUEORIGINVERTEX_Y, JPs_TRUEORIGINVERTEX_Z, myVELO, myBeamTRUE );
+
+      G_CONV_BEFORE = ConvertsBeforeStation( JPs_TRUE_EXP_TRACK_FirstMeasurement, E1_TRUEORIGINVERTEX_Z, myVELO );
+
+      // G converted in stations
+      G_CONV_IN_STATIONS = myVELO.IsInStations(E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y, E1_TRUEORIGINVERTEX_Z, myBeamTRUE);
+    }
+
+    // FirstMeasurement
+    TVector3 E1_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E1_PX,E1_PY, E1_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
+    TVector3 E2_EXP_TRACK_FirstMeasurement = get_exp_firstMeasurement( E2_PX,E2_PY, E2_PZ, Kst_ENDVERTEX_X, Kst_ENDVERTEX_Y, Kst_ENDVERTEX_Z, myVELO, myBeam);
+
+    E1_EXP_TRACK_FirstMeasurementZ = E1_EXP_TRACK_FirstMeasurement.Z();
+    E2_EXP_TRACK_FirstMeasurementZ = E2_EXP_TRACK_FirstMeasurement.Z();
+    E1_EXP_TRACK_FirstMeasurementY = E1_EXP_TRACK_FirstMeasurement.Y();
+    E2_EXP_TRACK_FirstMeasurementY = E2_EXP_TRACK_FirstMeasurement.Y();
+    E1_EXP_TRACK_FirstMeasurementX = E1_EXP_TRACK_FirstMeasurement.X();
+    E2_EXP_TRACK_FirstMeasurementX = E2_EXP_TRACK_FirstMeasurement.X();
+
+    // XY_FROM_BEAM
+    // Rescale center (0,0) to (beamX,beamY)
+    Double_t beamX = myBeam.GetX();
+    Double_t beamY = myBeam.GetY();
+    TVector2 XYbeam( -beamX, -beamY );
+
+    // Calculated distance of XY FirstMeasurement from beam axis
+    TVector2 E1_XY(E1_TRACK_FirstMeasurementX, E1_TRACK_FirstMeasurementY);
+    TVector2 E1_XY_recentered = XYbeam + E1_XY;
+    E1_XY_FROM_BEAM = E1_XY_recentered.Mod();
+
+    TVector2 E2_XY(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY);
+    TVector2 E2_XY_recentered = XYbeam + E2_XY;
+    E2_XY_FROM_BEAM = E2_XY_recentered.Mod();
+
+    // Phi
+    TVector3 E1_3P(E1_PX, E1_PY, E1_PZ);
+    E1_PHI = E1_3P.Phi();
+    TVector3 E2_3P(E2_PX, E2_PY, E2_PZ);
+    E2_PHI = E2_3P.Phi();
+    TVector3 JPs_3P(JPs_PX, JPs_PY, JPs_PZ);
+    JPs_PHI = JPs_3P.Phi();
+    TVector3 K_3P(K_PX, K_PY, K_PZ);
+    K_PHI = K_3P.Phi();
+    TVector3 E1_First_3P(E1_TRACK_FirstMeasurementX, E1_TRACK_FirstMeasurementY, 0);
+    E1_First_PHI = E1_First_3P.Phi();
+    TVector3 E2_First_3P(E2_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY, 0);
+    E2_First_PHI = E2_First_3P.Phi();
+
+    // theta_k
+    K_THETA_K = sin( K_PT / K_P );
+    E1_THETA_K = sin( E1_PT / E1_P );
+    E2_THETA_K = sin( E2_PT / E1_P );
+    JPs_THETA_K = sin( JPs_PT / JPs_P );
+
+    sample_tree->Fill();
+  }
+
+  sample_file->Write();
+  std::cout << "Added conversion branches to tree" << sample_treeName << " in file " << sample_fileName << std::endl << std::endl ;
+
 }

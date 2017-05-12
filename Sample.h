@@ -35,6 +35,8 @@ class Sample
 
   enum class DecayType {data_KstEE, data_KstJPsEE, MC_KstEE, MC_KstGEE, MC_KstJPsEE};
 
+  enum class TriggerCat {all, L0L, L0H, L0I};
+
   //============================================================================
   // Constructor
   //============================================================================
@@ -43,7 +45,7 @@ class Sample
   Sample();
 
   // Full constructor
-  Sample(TString fileName, TString treeName, Sample::DecayType type);
+  Sample(TString fileName, TString treeName, Sample::DecayType type, Sample::TriggerCat triggerCat = Sample::TriggerCat all );
 
   //============================================================================
   // Public member functions
@@ -62,6 +64,8 @@ class Sample
 
   void MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCat = "" );
 
+  void AddConversionBranches( );
+
   //============================================================================
   // Private attributes
   //============================================================================
@@ -72,6 +76,7 @@ class Sample
   bool sample_isMC;
   bool sample_isJPs;
   Sample::DecayType sample_type;
+  Sample::TriggerCat sample_triggerCat;
   TTree* sample_tree;
   TFile* sample_file;
 };
