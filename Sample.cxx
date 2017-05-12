@@ -20,14 +20,41 @@ Sample::Sample()
 }
 
 // Full constructor
-Sample::Sample(TString fileName, TString treeName, bool isMC, Sample::DecayType type)
+Sample::Sample(TString fileName, TString treeName, Sample::DecayType type)
 {
   sample_fileName = fileName;
   sample_treeName = treeName;
-  sample_isMC = isMC;
-  sample_type = type;
   sample_file = new TFile(fileName, "read");
   sample_tree = (TTree*) sample_file->Get(treeName);
+  sample_type = type;
+
+  switch(sample_type)
+  {
+    case DecayType::data_KstEE:
+      sample_isMC = false;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::data_KstJPsEE:
+      sample_isMC = false;
+      sample_isJPs = true;
+      break;
+
+    case DecayType::MC_KstGEE:
+      sample_isMC = true;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::MC_KstEE:
+      sample_isMC = true;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::MC_KstJPsEE:
+      sample_isMC = true;
+      sample_isJPs = true;
+      break;
+  }
 }
 
 //============================================================================
@@ -65,7 +92,7 @@ TTree* Sample::GetTree()
   return sample_tree;
 }
 
-// Tree initializer
+// Create tuples
 
 void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCat )
 {
@@ -75,6 +102,36 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
   newFile->ReOpen("update");
   TTree *newTree = sample_tree->CloneTree(0);
   std::cout << "Cloned tree " << sample_treeName << " with number of entries = "<< sample_tree->GetEntries() << std::endl ;
+
+  TString newTreeName;
+  switch(sample_type)
+  {
+    case DecayType::data_KstEE:
+      newTreeName = "data";
+      if ( triggerCat != "" ) newTreeName = "data_"+triggerCat;
+      break;
+
+    case DecayType::data_KstJPsEE:
+      newTreeName = "data";
+      if ( triggerCat != "" ) newTreeName = "data_"+triggerCat;
+      break;
+
+    case DecayType::MC_KstGEE:
+      newTreeName = "Bd2KstGEE";
+      if ( triggerCat != "" ) newTreeName = "Bd2KstGEE_"+triggerCat;
+      break;
+
+    case DecayType::MC_KstEE:
+      newTreeName = "Bd2KstEE";
+      if ( triggerCat != "" ) newTreeName = "Bd2KstEE_"+triggerCat;
+      break;
+
+    case DecayType::MC_KstJPsEE:
+      newTreeName = "Bd2KstJPsEE";
+      if ( triggerCat != "" ) newTreeName = "Bd2KstJPsEE_"+triggerCat;
+      break;
+  }
+  newTree->SetName( newTreeName );
 
   // Common to all samples
   Int_t K_L0Calo_HCAL_region, Pi_L0Calo_HCAL_region, E1_L0Calo_ECAL_region, E2_L0Calo_ECAL_region;
@@ -125,6 +182,11 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
   sample_tree->SetBranchAddress("B0_M013_Subst3_pi2K", &B0_M013_Subst3_pi2K);
   sample_tree->SetBranchAddress("cosThetaL", &cosThetaL);
 
+  // Jps specific
+  Double_t B0_PV_JPs_M;
+  Bool_t isB0_PV_JPs_M = true;
+  if ( sample_isJPs ) sample_tree->SetBranchAddress("B0_PV_JPs_M", &B0_PV_JPs_M);
+
   // Q2 specific
   sample_tree->SetBranchAddress("B0_HOP_M", &B0_HOP_M);
   sample_tree->SetBranchAddress("B0_FDCHI2_OWNPV", &B0_FDCHI2_OWNPV);
@@ -162,6 +224,7 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
     sample_tree->SetBranchAddress("E2_MC12TuneV3_ProbNNe", &E2_MC12TuneV3_ProbNNe);
     sample_tree->SetBranchAddress("Pi_MC12TuneV2_ProbNNpi", &Pi_MC12TuneV2_ProbNNpi);
     sample_tree->SetBranchAddress("Pi_MC12TuneV2_ProbNNk", &Pi_MC12TuneV2_ProbNNk);
+    sample_tree->SetBranchAddress("Pi_MC12TuneV2_ProbNNp", &Pi_MC12TuneV2_ProbNNp);
     sample_tree->SetBranchAddress("K_PIDK", &K_PIDK);
     sample_tree->SetBranchAddress("K_MC12TuneV2_ProbNNk", &K_MC12TuneV2_ProbNNk);
     sample_tree->SetBranchAddress("K_MC12TuneV2_ProbNNp", &K_MC12TuneV2_ProbNNp);
@@ -219,19 +282,24 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
     if ( sample_isMC )
     {
       isBKGCAT = B0_BKGCAT == 0 || B0_BKGCAT == 10 || B0_BKGCAT == 50 || B0_BKGCAT == 60;
-
-      // JUST FOR BIFNAI !!!!!!!!!!!!!!!!!!
-      isL0 = true;
     }
 
     // Data specific
-    if ( !sample_isMC )
+    if ( !(sample_isMC) )
     {
       isPID = ( TMath::Min(E1_PIDe, E2_PIDe) > 0 ) && (TMath::Min(E1_MC12TuneV3_ProbNNe, E2_MC12TuneV3_ProbNNe) > 0.2) && (Pi_MC12TuneV2_ProbNNpi * (1 - Pi_MC12TuneV2_ProbNNk) * (1 - Pi_MC12TuneV2_ProbNNp) > 0.1) && K_PIDK > -5 && (K_MC12TuneV2_ProbNNk * (1 - K_MC12TuneV2_ProbNNp) > 0.05 );
     }
 
+    // JPs specific
+    if ( sample_isJPs )
+    {
+      isHOP = true;
+      isB0_PV_M = true;
+      isB0_PV_JPs_M = ( B0_PV_JPs_M > myQ2Bin->GetB0_PV_M_min() ) && ( B0_PV_JPs_M < myQ2Bin->GetB0_PV_M_max() );
+    }
+
     // Apply cuts
-    if( isL0 && isHlt && isCaloRegion && isCaloRich && isPt && isTrack && isNotGhost && isCaloProj && isMass && isCosThetaL && isJPs_M && isHOP && isB0_PV_M && iswNB && isBKGCAT && isPID )
+    if( isL0L && isL0H && isL0I && isL0 && isHlt && isCaloRegion && isCaloRich && isPt && isTrack && isNotGhost && isCaloProj && isMass && isCosThetaL && isJPs_M && isHOP && isB0_PV_M && isB0_PV_JPs_M && iswNB && isBKGCAT && isPID )
     {
       newTree->Fill();
     }
@@ -239,8 +307,8 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
 
   //
 
-  newFile->Write();
-  std::cout << "Tree " << sample_treeName << " with number of entries = "
-  << newTree->GetEntries() << " written in file " << newFile << endl ;
-  newFile->Close();
+  newFile->Write("",TObject::kOverwrite);
+  std::cout << "Tree " << newTreeName << " with number of entries = "
+  << newTree->GetEntries() << " written in file " << newFile << endl << endl ;
+  // newFile->Close();
 }

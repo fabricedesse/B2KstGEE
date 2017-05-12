@@ -18,10 +18,12 @@ def MergeTuples( path, oldTreeName, newTreeName ):
 
 
 def CreateRawTuple():
-    myFile = TFile("../data/Raw/Raw.root", "RECREATE")
+    pathToRaw = "/sps/lhcb/fdesse/tuples_B2KstGEE/raw_tuples/Raw.root"
+    pathToSuperRaw = "/sps/lhcb/bifani/RD/Analysis/RKst/jobs/jobs/apply_EE_20/"
+    myFile = TFile(pathToRaw, "RECREATE")
 
-    Bd2KstGEE = MergeTuples( "../data/Raw/Bd2KstG_EE/*/*/*.root", "DecayTuple", "Bd2KstGEE" )
-    Bd2KstEE = MergeTuples( "../data/Raw/Bd2KstEE/*/*/*.root", "DecayTuple", "Bd2KstEE" )
-    Bd2KstJPsEE = MergeTuples( "../data/Raw/Bd2KstJPs_EE/*/*/*.root", "DecayTuple", "Bd2KstJPsEE")
-    LPT = MergeTuples( "../data/Raw/LPT/*/*/*.root","DecayTuple", "LPT")
+    Bd2KstGEE = MergeTuples( pathToSuperRaw+"Bd2KstG_EE/*/*/*.root", "DecayTuple", "Bd2KstGEE" )
+    Bd2KstEE = MergeTuples( pathToSuperRaw"Bd2KstEE/*/*/*.root", "DecayTuple", "Bd2KstEE" )
+    Bd2KstJPsEE = MergeTuples( pathToSuperRaw"Bd2KstJPs_EE/*/*/*.root", "DecayTuple", "Bd2KstJPsEE")
+    LPT = MergeTuples( pathToSuperRaw"LPT/*/*/*.root","DecayTuple", "data")
     myFile.Write()
