@@ -98,6 +98,105 @@ TTree* Sample::GetTree()
   return sample_tree;
 }
 
+// Setters
+
+void Sample::SetFileName( TString fileName )
+{
+  sample_fileName = fileName;
+}
+
+void Sample::SetTreeName( TString treeName )
+{
+  sample_treeName = treeName;
+}
+
+void Sample::SetDecayType( Sample::DecayType type )
+{
+  sample_type = type;
+}
+
+void Sample::SetTriggerCat( Sample::TriggerCat triggerCat )
+{
+  sample_triggerCat = triggerCat;
+}
+
+// Updaters
+
+void Sample::Update()
+{
+  sample_file = new TFile(sample_fileName, "read");
+  sample_tree = (TTree*) sample_file->Get(sample_treeName);
+
+  switch(sample_type)
+  {
+    case DecayType::data_KstEE:
+      sample_isMC = false;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::data_KstJPsEE:
+      sample_isMC = false;
+      sample_isJPs = true;
+      break;
+
+    case DecayType::MC_KstGEE:
+      sample_isMC = true;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::MC_KstEE:
+      sample_isMC = true;
+      sample_isJPs = false;
+      break;
+
+    case DecayType::MC_KstJPsEE:
+      sample_isMC = true;
+      sample_isJPs = true;
+      break;
+  }
+}
+
+void Sample::UpdateTreeName( DecayType myDecayType, TriggerCat myTriggerCat )
+{
+  // Construct tree name
+  TString myTreeName = "";
+
+  switch(myDecayType)
+  {
+    case Sample::DecayType::MC_KstGEE:
+      myTreeName = "Bd2KstGEE";
+      break;
+
+    case Sample::DecayType::MC_KstEE:
+      myTreeName = "Bd2KstEE";
+      break;
+
+    case Sample::DecayType::data_KstEE:
+      myTreeName = "data";
+      break;
+  }
+
+  switch(myTriggerCat)
+  {
+    case Sample::TriggerCat::all:
+      break;
+
+    case Sample::TriggerCat::L0L:
+      myTreeName = myTreeName+"_L0L";
+      break;
+
+    case Sample::TriggerCat::L0H:
+      myTreeName = myTreeName+"_L0H";
+      break;
+
+    case Sample::TriggerCat::L0I:
+      myTreeName = myTreeName+"_L0I";
+      break;
+  }
+
+  sample_treeName = myTreeName;
+}
+
 //******************************************************************************
 
 // Create tuples
@@ -397,6 +496,8 @@ bool ConvertsBeforeStation ( TVector3 JPs_FirstVELOhit, Double_t JPs_ENDVERTEX_Z
 
 void Sample::AddConversionBranches()
 {
+  // Check if tree is empty
+  if ( sample_tree->GetEntries() == 0 ) return;
   sample_file->ReOpen("update");
 
   //============================================================================
@@ -816,6 +917,6 @@ void Sample::AddConversionBranches()
   }
 
   sample_file->Write();
-  std::cout << "Added conversion branches to tree" << sample_treeName << " in file " << sample_fileName << std::endl << std::endl ;
+  std::cout << "Added conversion branches to tree " << sample_treeName << " in file " << sample_fileName << std::endl << std::endl ;
 
 }

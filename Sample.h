@@ -61,6 +61,16 @@ class Sample
   TTree* GetTree();
   Sample::TriggerCat GetTriggerCat();
 
+  // Setters
+  void SetFileName( TString fileName );
+  void SetTreeName( TString treeName );
+  void SetDecayType( Sample::DecayType type );
+  void SetTriggerCat( Sample::TriggerCat triggerCat );
+
+  // Updaters
+  void Update();
+  void UpdateTreeName( DecayType myDecayType, TriggerCat myTriggerCat );
+
   // Tree initializer
 
   void MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCat = "" );
