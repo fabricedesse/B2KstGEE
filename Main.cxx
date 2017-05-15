@@ -62,7 +62,7 @@ int main()
   // Create tuples
   //============================================================================
 
-  // Gamma
+  // // Gamma
   // std::cout << "########## Create tuples Gamma ##########" << std::endl;
   // TFile fGamma(pathToConv+"EE_candidates_gamma_20170511.root", "RECREATE");
   // Q2Bin gamma( 0, .0004 , 3350, 135, 0.49, 4500, 6200 );
@@ -74,32 +74,32 @@ int main()
   //   }
   // }
   // std::cout<<std::endl;
-  //
-  // // Low
-  // std::cout << "########## Create tuples Low ##########" << std::endl;
-  // TFile fLow(pathToConv+"EE_candidates_low_20170511.root", "RECREATE");
-  // Q2Bin low( .0004, 1.1, 5072, 1, 0.95, 4500, 6200 );
-  // for ( SampleIterator mySample = KstEE_samples.begin(); mySample != KstEE_samples.end(); mySample++ )
-  // {
-  //   for ( TStringIterator myTriggerCat = triggerCats.begin(); myTriggerCat != triggerCats.end(); myTriggerCat++ )
-  //   {
-  //     mySample->MakePreselection( &fLow, &low, *myTriggerCat );
-  //   }
-  // }
-  // std::cout<<std::endl;
-  //
-  // // Central
-  // std::cout << "########## Create tuples Central ##########" << std::endl;
-  // TFile fCentral(pathToConv+"EE_candidates_central_20170511.root", "RECREATE");
-  // Q2Bin central( 1.1, 6, 4926, 10, 0.99, 4500, 6200 );
-  // for ( SampleIterator mySample = KstEE_samples.begin(); mySample != KstEE_samples.end(); mySample++ )
-  // {
-  //   for ( TStringIterator myTriggerCat = triggerCats.begin(); myTriggerCat != triggerCats.end(); myTriggerCat++ )
-  //   {
-  //     mySample->MakePreselection( &fCentral, &central, *myTriggerCat );
-  //   }
-  // }
-  // std::cout<<std::endl;
+
+  // Low
+  std::cout << "########## Create tuples Low ##########" << std::endl;
+  TFile fLow(pathToConv+"EE_candidates_low_20170511.root", "RECREATE");
+  Q2Bin low( .0004, 1.1, 5072, 1, 0.95, 4500, 6200 );
+  for ( SampleIterator mySample = KstEE_samples.begin(); mySample != KstEE_samples.end(); mySample++ )
+  {
+    for ( TStringIterator myTriggerCat = triggerCats.begin(); myTriggerCat != triggerCats.end(); myTriggerCat++ )
+    {
+      mySample->MakePreselection( &fLow, &low, *myTriggerCat );
+    }
+  }
+  std::cout<<std::endl;
+
+  // Central
+  std::cout << "########## Create tuples Central ##########" << std::endl;
+  TFile fCentral(pathToConv+"EE_candidates_central_20170511.root", "RECREATE");
+  Q2Bin central( 1.1, 6, 4926, 10, 0.99, 4500, 6200 );
+  for ( SampleIterator mySample = KstEE_samples.begin(); mySample != KstEE_samples.end(); mySample++ )
+  {
+    for ( TStringIterator myTriggerCat = triggerCats.begin(); myTriggerCat != triggerCats.end(); myTriggerCat++ )
+    {
+      mySample->MakePreselection( &fCentral, &central, *myTriggerCat );
+    }
+  }
+  std::cout<<std::endl;
 
   // JPs
   std::cout << "########## Create tuples JPs ##########" << std::endl;
@@ -116,7 +116,6 @@ int main()
 
   // Test add branch
   // Sample Bd2KstGEE_conv( pathToConv+"EE_candidates_gamma_20170511.root", "Bd2KstGEE", Sample::DecayType::MC_KstGEE );
-  // Sample
   //
   // Bd2KstGEE_conv.AddConversionBranches();
 

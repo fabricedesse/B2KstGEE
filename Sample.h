@@ -45,7 +45,7 @@ class Sample
   Sample();
 
   // Full constructor
-  Sample(TString fileName, TString treeName, Sample::DecayType type, Sample::TriggerCat triggerCat = Sample::TriggerCat all );
+  Sample(TString fileName, TString treeName, Sample::DecayType type, Sample::TriggerCat triggerCat = Sample::TriggerCat::all );
 
   //============================================================================
   // Public member functions
@@ -59,6 +59,7 @@ class Sample
   Sample::DecayType GetType();
   TFile* GetFile();
   TTree* GetTree();
+  Sample::TriggerCat GetTriggerCat();
 
   // Tree initializer
 

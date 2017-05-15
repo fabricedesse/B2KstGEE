@@ -83,6 +83,11 @@ Sample::DecayType Sample::GetType()
   return sample_type;
 }
 
+Sample::TriggerCat Sample::GetTriggerCat()
+{
+  return sample_triggerCat;
+}
+
 TFile* Sample::GetFile()
 {
   return sample_file;
@@ -283,7 +288,7 @@ void Sample::MakePreselection( TFile* newFile, Q2Bin* myQ2Bin, TString triggerCa
     // MC specific
     if ( sample_isMC )
     {
-      isBKGCAT = B0_BKGCAT == 0 || B0_BKGCAT == 10 || B0_BKGCAT == 50 || B0_BKGCAT == 60;
+      isBKGCAT = B0_BKGCAT == 0 || B0_BKGCAT == 10 || B0_BKGCAT == 50;
     }
 
     // Data specific
@@ -497,9 +502,7 @@ void Sample::AddConversionBranches()
   Double_t E2_TRUE_EXP_TRACK_FirstMeasurementX = -1000;
   Double_t E1_XY_FROM_BEAM = -1000;
   Double_t E2_XY_FROM_BEAM = -1000;
-  Double_t E1_TRUE_PHI = -1000;
   Double_t E1_PHI = -1000;
-  Double_t E2_TRUE_PHI = -1000;
   Double_t E2_PHI = -1000;
   Double_t JPs_PHI = -1000;
   Double_t K_PHI = -1000;
@@ -597,31 +600,37 @@ void Sample::AddConversionBranches()
   sample_tree->SetBranchAddress("E2_TRACK_FirstMeasurementY", &E2_TRACK_FirstMeasurementY);
 
   // MC specific
+  TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementZ(0);
+  TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementZ(0);
+  TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementY(0);
+  TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementY(0);
+  TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementX(0);
+  TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementX(0);
+  TBranch *b_G_CONV_IN_STATIONS(0);
+  TBranch *b_G_CONV_BEFORE(0);
+
   if ( sample_isMC )
   {
-    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementZ =
+    b_E1_TRUE_EXP_TRACK_FirstMeasurementZ =
       sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementZ",
       &E1_TRUE_EXP_TRACK_FirstMeasurementZ);
-    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementZ =
+    b_E2_TRUE_EXP_TRACK_FirstMeasurementZ =
       sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementZ",
       &E2_TRUE_EXP_TRACK_FirstMeasurementZ);
 
-    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementY =
+    b_E1_TRUE_EXP_TRACK_FirstMeasurementY =
       sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementY",
       &E1_TRUE_EXP_TRACK_FirstMeasurementY);
-    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementY =
+    b_E2_TRUE_EXP_TRACK_FirstMeasurementY =
       sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementY",
       &E2_TRUE_EXP_TRACK_FirstMeasurementY);
 
-    TBranch *b_E1_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementX", &E1_TRUE_EXP_TRACK_FirstMeasurementX);
-    TBranch *b_E2_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementX", &E2_TRUE_EXP_TRACK_FirstMeasurementX);
+    b_E1_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E1_TRUE_EXP_TRACK_FirstMeasurementX", &E1_TRUE_EXP_TRACK_FirstMeasurementX);
+    b_E2_TRUE_EXP_TRACK_FirstMeasurementX = sample_tree->Branch("E2_TRUE_EXP_TRACK_FirstMeasurementX", &E2_TRUE_EXP_TRACK_FirstMeasurementX);
 
-    TBranch *b_E1_TRUE_PHI = sample_tree->Branch("E1_TRUE_PHI", &E1_TRUE_PHI);
-    TBranch *b_E2_TRUE_PHI = sample_tree->Branch("E2_TRUE_PHI", &E2_TRUE_PHI);
+    b_G_CONV_IN_STATIONS = sample_tree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
 
-    TBranch *b_G_CONV_IN_STATIONS = sample_tree->Branch("G_CONV_IN_STATIONS", &G_CONV_IN_STATIONS);
-
-    TBranch *b_G_CONV_BEFORE = sample_tree->Branch("G_CONV_BEFORE", &G_CONV_BEFORE);
+    b_G_CONV_BEFORE = sample_tree->Branch("G_CONV_BEFORE", &G_CONV_BEFORE);
   }
 
   TBranch *b_E1_EXP_TRACK_FirstMeasurementZ =
@@ -772,7 +781,38 @@ void Sample::AddConversionBranches()
     E2_THETA_K = sin( E2_PT / E1_P );
     JPs_THETA_K = sin( JPs_PT / JPs_P );
 
-    sample_tree->Fill();
+    // MC specific
+    if ( sample_isMC )
+    {
+      b_E1_TRUE_EXP_TRACK_FirstMeasurementZ->Fill();
+      b_E2_TRUE_EXP_TRACK_FirstMeasurementZ->Fill();
+      b_E1_TRUE_EXP_TRACK_FirstMeasurementY->Fill();
+      b_E2_TRUE_EXP_TRACK_FirstMeasurementY->Fill();
+      b_E1_TRUE_EXP_TRACK_FirstMeasurementX->Fill();
+      b_E2_TRUE_EXP_TRACK_FirstMeasurementX->Fill();
+      b_G_CONV_IN_STATIONS->Fill();
+      b_G_CONV_BEFORE->Fill();
+
+    }
+
+    b_E1_EXP_TRACK_FirstMeasurementZ->Fill();
+    b_E2_EXP_TRACK_FirstMeasurementZ->Fill();
+    b_E1_EXP_TRACK_FirstMeasurementY->Fill();
+    b_E2_EXP_TRACK_FirstMeasurementY->Fill();
+    b_E1_EXP_TRACK_FirstMeasurementX->Fill();
+    b_E2_EXP_TRACK_FirstMeasurementX->Fill();
+    b_E1_XY_FROM_BEAM->Fill();
+    b_E2_XY_FROM_BEAM->Fill();
+    b_E1_PHI->Fill();
+    b_E2_PHI->Fill();
+    b_JPs_PHI->Fill();
+    b_K_PHI->Fill();
+    b_K_THETA_K->Fill();
+    b_E1_First_PHI->Fill();
+    b_E2_First_PHI->Fill();
+    b_E1_THETA_K->Fill();
+    b_E2_THETA_K->Fill();
+    b_JPs_THETA_K->Fill();
   }
 
   sample_file->Write();
