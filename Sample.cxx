@@ -916,7 +916,9 @@ void Sample::AddConversionBranches()
     b_JPs_THETA_K->Fill();
   }
 
-  sample_file->Write();
+  sample_tree->Write("",TObject::kOverwrite);
   std::cout << "Added conversion branches to tree " << sample_treeName << " in file " << sample_fileName << std::endl << std::endl ;
+
+  sample_file->Close();
 
 }

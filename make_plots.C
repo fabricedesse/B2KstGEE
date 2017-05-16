@@ -176,6 +176,8 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   TH2F *G_CONV_VELO = new TH2F("G_CONV_VELO", "Convertion in VELO stations: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
   TH2F * G_CONV_RF = new TH2F("G_CONV_RF", "Convertion in RF shield: E1_TRUEORIGINVERTEX_X vs E1_TRUEORIGINVERTEX_Y", 100, -40, 40, 100, -40, 40);
 
+  TH1F *E1_E2_Dist = new TH1F("E1_E2_Dist", "Distance of first hit between E1 and E2 in XY plane", 30, 0., 0.02);
+
   // Phi
   TH1F *K_PHI_VeryLow = new TH1F("K_PHI_VeryLow", "K_PHI {K_THETA_K < 0.03}", 100, -3.5, 3.5);
   TH1F *K_PHI_Low = new TH1F("K_PHI_Low", "K_PHI {0.03 < K_THETA_K < 0.1}", 100, -3.5, 3.5);
@@ -252,6 +254,10 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
       if ( G_CONV_IN_STATIONS ) G_CONV_VELO->Fill( E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y );
       else G_CONV_RF->Fill( E1_TRUEORIGINVERTEX_X, E1_TRUEORIGINVERTEX_Y );
      }
+
+     // E1 E2 distance
+     TVector2 E1E2( E2_TRACK_FirstMeasurementX - E1_TRACK_FirstMeasurementX, E2_TRACK_FirstMeasurementY - E1_TRACK_FirstMeasurementY );
+     if ( E1E2.Mod() < 0.02 ) E1_E2_Dist->Fill( E1E2.Mod() );
 
      // For E2
      // Compute flight distance Z
@@ -409,6 +415,11 @@ void make_plots_MC(TString input_file, TString input_tree, TString output_folder
   K_PHI_VeryHigh->Draw();
   c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_K_PHI_VeryHigh.png");
 
+  E1_E2_Dist->GetXaxis()->SetTitle("E1_E2_Dist");
+  E1_E2_Dist->GetYaxis()->SetTitle("Nb of events");
+  E1_E2_Dist->GetYaxis()->SetTitleOffset(1.6);
+  E1_E2_Dist->Draw();
+  c->SaveAs("../plots/"+output_folder+"/"+output_folder+"_E1_E2_Dist.png");
 
   // Phi
 
@@ -868,4 +879,19 @@ void make_plots_data(TString input_file, TString input_tree, TString output_fold
   E2_PHI_VeryHigh->Draw();
 
   cMultiple->SaveAs("../plots/Phi/"+output_folder+"_PHI.png");
+}
+
+void MergePlot( TString file1, TString plot1, TString file2, TString plot2, TString outFile )
+{
+  // Get histograms
+  TFile *f1 = new TFile( file1, "read" );
+  TFile *f2 = new TFile( file2, "read" );
+  TH1F* h1 = (TH1F*) f1->Get( plot1 );
+  TH1F* h2 = (TH1F*) f2->Get( plot2 );
+
+  TCanvas *c = new TCanvas("c","Plots",100,100,1400,1000);
+  h1->DrawNormalized("E");
+  h2->SetLineColor(kRed);
+  h2->DrawNormalized("E SAME");
+  c->SaveAs(outFile);
 }
