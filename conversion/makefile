@@ -4,7 +4,7 @@
 ######################################################################
 BINS = Main
 # ADD = create_tree.cxx
-DIC = VELO.cxx Station.cxx VELO_geometry.C Beam.cxx Sample.cxx Q2Bin.cxx
+DIC = make_plots.C
 
 CXX = g++
 CCFLAGS = -O2 -ggdb -std=c++11
@@ -24,7 +24,7 @@ default : $(BINS) $(ADD)  $(DIC)
 # $(INCS): % : %.cxx
 # 	$(CXX)
 
-$(BINS): % : %.cxx VELO.h Station.h VELO_geometry.h Beam.h Sample.h Q2Bin.h
+$(BINS): % : %.cxx make_plots.h 
 	@echo -n "Building $@ ... "
 	$(CXX) $(CCFLAGS) $(DIC)  $(ADD) $<  $(addprefix -I, $(INCS))  $(shell root-config --libs)  $(ROOSTAT) -lMLP -lMinuit -lTreePlayer  -lXMLIO   -lm  -g -o $@
 	@echo "Done"
